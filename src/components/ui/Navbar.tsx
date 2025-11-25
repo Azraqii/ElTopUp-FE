@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
 //Import Assets
@@ -7,7 +7,7 @@ import iconSearch from "../../assets/search.svg";
 import iconCart from "../../assets/cart.svg";
 
 const Navbar: React.FC = () => {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const navLinks = [
         { name: 'Beli Robux', path: '/'},

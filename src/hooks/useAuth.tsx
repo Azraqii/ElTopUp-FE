@@ -1,7 +1,7 @@
 // src/hooks/useAuth.tsx
 // src/hooks/useAuth.tsx (SOLUSI)
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { ReactNode, FC } from 'react'; // <-- PENTING: Import tipe secara terpisah
+import type { ReactNode} from 'react'; // <-- PENTING: Import tipe secara terpisah
 
 // 1. Definisikan Tipe User dan Context
 interface User {
