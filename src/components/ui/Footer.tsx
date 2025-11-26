@@ -73,13 +73,13 @@ const Footer: React.FC = () => {
                             {/* WhatsApp Link */}
                             <li>
                                 <a 
-                                    href="https://wa.me/628xx" 
+                                    href="https://wa.me/6285121300646" 
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-2 hover:text-brand-blue transition-colors w-fit"
                                 >
                                     <img src={Phone} alt="Phone" className="w-4 h-4" />
-                                    <span>08xx-xxxx-xxxx</span>
+                                    <span>+62 851‑2130‑0646</span>
                                 </a>
                             </li>
 
