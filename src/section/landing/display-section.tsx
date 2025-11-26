@@ -7,8 +7,7 @@ import imgArrowRight from '../../assets/Arrow_right.svg';
 import DisplayCard from '../../components/ui/DisplayCard';
 import CardGradSelengkapnya from '../../components/ui/CardGradSelengkapnya';
 
-// Import Aset Gambar (Pastikan file-file ini ada di folder src/assets/)
-// Jika belum ada, Anda bisa menggunakan placeholder atau komentar dulu.
+// Import Gambar Produk
 import imgGrowAGarden from '../../assets/GrowAGarden.png';
 import imgFishIt from '../../assets/FishIt.png';
 import imgStealABrainrot from '../../assets/StealABrainrot.png';
@@ -92,7 +91,7 @@ const DisplaySection: React.FC = () => {
             >
               <CardGradSelengkapnya icon={imgArrowRight} text="Selengkapnya" />
             </Link>
-            
+
           </div>
 
           {/* Grid Cards (Semua Coming Soon) */}

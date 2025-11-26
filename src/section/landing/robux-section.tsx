@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
 // Import aset SVG
-import iconZap from '../../assets/zap.svg';
-import iconStar from '../../assets/star.svg';
-import iconShield from '../../assets/shield.svg';
+import iconZap from '../../assets/Zap.svg';
+import iconStar from '../../assets/Star.svg';
+import iconShield from '../../assets/Shield.svg';
 
 // Import komponen UI
-import CardGrad from '../../components/ui/CardGrad';
+import CardGrad from '../../components/ui/CardGrad.tsx';
 import CardRobux from '../../components/ui/CardRobux';
 
 // Import Mock Data
