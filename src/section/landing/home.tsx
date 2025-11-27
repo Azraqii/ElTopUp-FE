@@ -12,7 +12,7 @@ const home: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 
                 {/* container utama */}
-                <div className="grid grid-cols-1 md:grid-cols-[45%_55%] gap-16 items-center">
+                <div className="grid grid-cols-1 md:grid-cols-[45%_55%] gap-2 items-center">
                     
                     {/* Div Kiri (Asset) */}
                     <div className="hidden md:flex justify-left items-center w-full">

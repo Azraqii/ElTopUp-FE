@@ -25,7 +25,7 @@ const RobuxSection: React.FC = () => {
     };
 
     return (
-        <section id="robux-section" className="relative bg-white py-20">
+        <section id="robux-section" className="relative bg-white pb-20 pt-10">
             
             {/* Glow Effect Pojok Kiri Atas Berbentuk 1/4 lingkaran */}
             <div className="absolute top-0 left-0 -mt-20 -ml-20 w-96 h-96 bg-blue-300/50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>

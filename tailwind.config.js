@@ -16,7 +16,7 @@ export default {
       },
       fontFamily: {
         // Opsional: Jika nanti ada font khusus, kita set di sini
-        sans: ['Inter', 'sans-serif'], 
+        sans: ['Montserrat', 'sans-serif'], 
       }
     },
   },
