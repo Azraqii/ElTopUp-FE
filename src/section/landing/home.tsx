@@ -1,5 +1,4 @@
 import React from "react";
-import Avatar from "../../assets/avatar.png";
 import GroupAvatar from "../../assets/Group_Avatar.svg";
 
 const home: React.FC = () => {
