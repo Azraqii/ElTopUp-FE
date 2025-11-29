@@ -33,7 +33,7 @@ const RobuxSection: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 
                 {/* div card atas */}
-                <div className="flex justify-end gap-3 mb-4 transform md:scale-125 md:origin-right">
+                <div className="flex flex-wrap justify-end gap-3 mb-4 transform md:scale-125 md:origin-right">
                     <CardGrad icon={iconZap} text="Proses Instan"/>
                     <CardGrad icon={iconStar} text="Simple" />
                     <CardGrad icon={iconShield} text="Garansi Uang Kembali" />

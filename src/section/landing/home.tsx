@@ -1,4 +1,6 @@
 import React from "react";
+import Avatar from "../../assets/avatar.png";
+import GroupAvatar from "../../assets/Group_Avatar.svg";
 
 const home: React.FC = () => {
     return (
@@ -16,7 +18,16 @@ const home: React.FC = () => {
                     
                     {/* Div Kiri (Asset) */}
                     <div className="hidden md:flex justify-left items-center w-full">
-                         <div className="bg-brand-blue rounded-full w-full max-w-md aspect-square shadow-lg"></div>
+                         <div className="bg-gradient-to-r from-blue-200 to-brand-blue rounded-full w-full max-w-md aspect-square shadow-[0_0_30px_5px_rgba(96,165,250,0.8),0_0_80px_20px_rgba(59,130,246,0.4)] pr-5">
+                            {/* Gambar Asset */}
+                            <div className = "w-[110%] h-[110%] mt-[-10%] ">
+                            <img 
+                                src={GroupAvatar} 
+                                alt="Avatar" 
+                                className="w-full h-full object-cover rounded-full p-6"
+                            />
+                            </div>
+                         </div> 
                     </div>
 
                     {/* Div Kanan (Headline) */}
