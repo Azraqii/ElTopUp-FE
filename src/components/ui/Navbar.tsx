@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 //Import Assets
 import logoELTopup from "../../assets/eltopup.svg";
 import iconSearch from "../../assets/search.svg";
-import iconCart from "../../assets/cart.svg";
 
 const Navbar: React.FC = () => {
     // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -49,9 +48,6 @@ const Navbar: React.FC = () => {
                             <img src={iconSearch} alt="Search" className="w-5 h-5" />
                         </button>
                         {/* cart icon */}
-                        <button className="hidden md:block p-2 hover:bg-gray-100 rounded-full relative">
-                            <img src={iconCart} alt="Cart" className="w-5 h-5" />
-                        </button>
                         {/* sign up button */}
                         <Link 
                             to="/auth/login" 
