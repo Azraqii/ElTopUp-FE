@@ -1,6 +1,7 @@
 // src/section/product/ProductSelectionSection.tsx
 import React, { useState, useEffect } from 'react';
-import ProductItemCard from '../../components/ui/ProductItemCard';
+// Import komponen & data
+import ProductItemCard from '../../components/ui/ProductItemCart';
 import { productPackages } from '../../data/mockData';
 import type { ProductPackage, ProductCategory } from '../../data/mockData';
 
@@ -27,7 +28,7 @@ const ProductSelectionSection: React.FC = () => {
   // 2. Filter data berdasarkan kategori yang dipilih
   const filteredPackages = productPackages.filter(item => item.category === activeCategory);
 
-  // Reset quantity saat item berubah
+  // Efek Reset & Hitung Harga
   useEffect(() => {
     if (selectedItem) {
       setQuantity(1);
@@ -35,13 +36,13 @@ const ProductSelectionSection: React.FC = () => {
     }
   }, [selectedItem]);
 
-  // Update total harga saat quantity berubah
   useEffect(() => {
     if (selectedItem) {
       setTotalPrice(selectedItem.price * quantity);
     }
   }, [quantity, selectedItem]);
 
+  // Handler tombol quantity (+ / -)
   const handleQuantityChange = (type: 'inc' | 'dec') => {
     if (!selectedItem) return;
     if (selectedItem.type === 'gamepass') return;
@@ -53,13 +54,16 @@ const ProductSelectionSection: React.FC = () => {
     }
   };
 
+  // Handler Checkout
   const handleCheckout = () => {
     if (!username) {
       alert("Mohon isi Username Roblox Anda!");
+      // Focus ke input username
       document.getElementById('roblox-username')?.focus();
       return;
     }
     
+    // Simulasi Redirect ke Payment
     console.log("Checkout Payload:", {
         item: selectedItem,
         qty: quantity,
@@ -70,18 +74,17 @@ const ProductSelectionSection: React.FC = () => {
   };
 
   return (
-    // UBAH 1: Menghapus 'min-h-screen' agar section tidak memaksa tinggi layar penuh
-    // UBAH 2: Mengurangi 'pb-12' menjadi 'pb-4' agar footer lebih naik
-    <section id="selection-section" className="relative bg-white pt-16 pb-4">
+    <section id="selection-section" className="relative bg-gray-50 py-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* --- HEADER --- */}
-        <div className="flex flex-col md:flex-row justify-between items-end md:items-center mb-6 gap-4">
+        {/* --- HEADER PILIH PRODUK --- */}
+        <div className="flex flex-col md:flex-row justify-between items-end md:items-center mb-8 gap-4">
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">Pilih Produk</h2>
-                <p className="text-gray-500 text-sm mt-1">Dapatkan berbagai produk dengan mudah dan harga termurah!</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Pilih Nominal</h2>
+                <p className="text-gray-500 text-base mt-1">Pilih paket yang Anda butuhkan</p>
             </div>
             
+            {/* Search Bar Sederhana */}
             <div className="relative w-full md:w-72">
                 <input 
                     type="text" 
@@ -91,64 +94,29 @@ const ProductSelectionSection: React.FC = () => {
             </div>
         </div>
 
-        {/* --- TAMBAHAN: KATEGORI TABS (Scrollable) --- */}
-        <div className="mb-8 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 no-scrollbar">
-            <div className="flex gap-3 w-max">
-                {CATEGORIES.map((category) => (
-                    <button
-                        key={category}
-                        onClick={() => {
-                            setActiveCategory(category);
-                            setSelectedItem(null); // Reset pilihan saat ganti kategori agar UI bersih
-                        }}
-                        className={`
-                            px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-200 border
-                            ${activeCategory === category 
-                                ? 'bg-brand-blue text-white border-brand-light shadow-md' // Style aktif
-                                : 'bg-gray-100 text-gray-600 border-transparent hover:bg-gray-200' // Style inaktif
-                            }
-                        `}
-                    >
-                        {category}
-                    </button>
-                ))}
-            </div>
+        {/* --- GRID ITEM --- */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-32">
+            {productPackages.map((item) => (
+                <ProductItemCard 
+                    key={item.id}
+                    name={item.name}
+                    price={item.price}
+                    isSelected={selectedItem?.id === item.id}
+                    onClick={() => setSelectedItem(item)}
+                />
+            ))}
         </div>
 
-        {/* --- GRID ITEM (Gunakan filteredPackages) --- */}
-        {/* UBAH 3: Mengurangi 'mb-24' menjadi 'mb-20'. 
-            Kita butuh sedikit margin (sekitar 80px/5rem) agar Sticky Bar tidak menutupi item terakhir saat discroll,
-            tapi tidak sejauh 24 (96px). */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
-            {filteredPackages.length > 0 ? (
-                filteredPackages.map((item) => (
-                    <ProductItemCard 
-                        key={item.id}
-                        name={item.name}
-                        price={item.price}
-                        // Pastikan prop image ada di ProductItemCard dan MockData
-                        image={item.image} 
-                        isSelected={selectedItem?.id === item.id}
-                        onClick={() => setSelectedItem(item)}
-                    />
-                ))
-            ) : (
-                <div className="col-span-full text-center py-10 text-gray-400">
-                    Tidak ada item di kategori ini.
-                </div>
-            )}
-        </div>
-
-        {/* --- STICKY BOTTOM BAR (TETAP DIPERTAHANKAN) --- */}
+        {/* --- STICKY BOTTOM BAR (Form Transaksi) --- */}
+        {/* Muncul hanya jika item sudah dipilih */}
         {selectedItem && (
             <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] p-6 md:p-8 z-50 animate-slide-up">
                 <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
                     
-                    {/* Info Item */}
+                    {/* Info Item Terpilih */}
                     <div className="flex-1 w-full border-b lg:border-b-0 pb-4 lg:pb-0 border-gray-100">
-                        {/* Menampilkan kategori kecil di atas nama item */}
                         <p className="text-xs font-bold text-brand-blue uppercase tracking-wider mb-1">
-                            {selectedItem.category} {selectedItem.type === 'gamepass' && '(Max. 1)'}
+                            Item Terpilih {selectedItem.type === 'gamepass' && '(Maks. 1)'}
                         </p>
                         <h3 className="text-xl font-bold text-gray-900 line-clamp-1">{selectedItem.name}</h3>
                         <p className="text-gray-500 text-sm mt-1">
@@ -156,8 +124,10 @@ const ProductSelectionSection: React.FC = () => {
                         </p>
                     </div>
 
-                    {/* Input & Qty */}
+                    {/* Input Username & Quantity */}
                     <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto items-center">
+                        
+                        {/* Input Username */}
                         <div className="w-full md:w-64">
                             <input 
                                 id="roblox-username"
@@ -169,6 +139,7 @@ const ProductSelectionSection: React.FC = () => {
                             />
                         </div>
 
+                        {/* Quantity Counter */}
                         <div className="flex items-center bg-gray-100 rounded-xl p-1">
                             <button 
                                 onClick={() => handleQuantityChange('dec')}
@@ -203,6 +174,7 @@ const ProductSelectionSection: React.FC = () => {
                             onClick={handleCheckout}
                             className="bg-brand-blue text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-brand-blue/30 hover:bg-blue-700 hover:-translate-y-1 transition-all flex items-center gap-2"
                         >
+                            <span>🛒</span>
                             Checkout
                         </button>
                     </div>
@@ -212,6 +184,7 @@ const ProductSelectionSection: React.FC = () => {
         )}
 
       </div>
+
     </section>
   );
 };

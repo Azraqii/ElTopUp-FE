@@ -1,5 +1,7 @@
 // src/section/product/ProductTopSection.tsx
 import React, { useState } from 'react';
+// src/section/product/ProductTopSection.tsx
+import React, { useState } from 'react';
 import { productDetails } from '../../data/mockData';
 
 const ProductTopSection: React.FC = () => {
@@ -16,7 +18,7 @@ const ProductTopSection: React.FC = () => {
     <section className="relative bg-white pt-8 pb-12">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
           
           {/* --- KIRI: GAMBAR BANNER --- */}
           <div className="md:col-span-7 lg:col-span-8">
@@ -26,7 +28,7 @@ const ProductTopSection: React.FC = () => {
                 alt={productDetails.name} 
                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                 onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://placehold.co/600x400/e2e8f0/1e293b?text=Game+Banner';
+                    (e.target as HTMLImageElement).src = 'https://placehold.co/800x450?text=Game+Banner';
                 }}
               />
               {/* Overlay Gradient Halus */}
@@ -35,7 +37,7 @@ const ProductTopSection: React.FC = () => {
           </div>
 
           {/* --- KANAN: INFO & ACTION --- */}
-          <div className="md:col-span-5 lg:col-span-4 flex flex-col h-full justify-center space-y-6">
+          <div className="md:col-span-5 lg:col-span-4 flex flex-col h-full justify-start space-y-5 mt-2">
             
             <div className="flex justify-between items-start">
               <div>
@@ -76,14 +78,13 @@ const ProductTopSection: React.FC = () => {
                 </div>
                 <button 
                   onClick={scrollToSelection}
-                  className="w-full bg-brand-blue text-white py-3.5 rounded-xl font-bold text-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-300/50 transition-all transform hover:-translate-y-0.5"
+                  className="w-full bg-brand-blue text-white py-3 rounded-xl font-bold text-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-brand-blue/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  Beli Sekarang
+                  Pilih Item ↓
                 </button>
             </div>
 
           </div>
-
         </div>
       </div>
     </section>
