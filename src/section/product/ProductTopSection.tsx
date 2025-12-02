@@ -1,78 +1,86 @@
-import React from 'react';
-// Import data dummy
+// src/section/product/ProductTopSection.tsx
+import React, { useState } from 'react';
 import { productDetails } from '../../data/mockData';
 
 const ProductTopSection: React.FC = () => {
-  // Fungsi untuk scroll halus ke section bawah
+  const [isLiked, setIsLiked] = useState(false);
+
   const scrollToSelection = () => {
     const section = document.getElementById('selection-section');
     section?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <section className="relative bg-white pt-8 pb-12">
-      {/* Background Blur Dekorasi */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-50 to-transparent opacity-60 pointer-events-none"></div>
-
+    <section className="relative bg-white pt-4 pb-12"> 
+      {/* UBAH: pt-8 jadi pt-4 agar tidak terlalu jauh dari navbar */}
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
           
           {/* --- KIRI: GAMBAR BANNER --- */}
           <div className="md:col-span-7 lg:col-span-8">
-            <div className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-2xl shadow-blue-200/50 border border-gray-100 group">
-              {/* Placeholder Image jika URL mati */}
+            <div className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-xl border border-gray-100 group">
               <img 
                 src={productDetails.imageBanner} 
                 alt={productDetails.name} 
                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                 onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://placehold.co/600x400/e2e8f0/1e293b?text=Game+Banner';
+                    (e.target as HTMLImageElement).src = 'https://placehold.co/800x450?text=Game+Banner';
                 }}
               />
-              {/* Overlay Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-60"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-80"></div>
             </div>
           </div>
 
           {/* --- KANAN: INFO & ACTION --- */}
-          <div className="md:col-span-5 lg:col-span-4 flex flex-col h-full justify-center space-y-6">
+          <div className="md:col-span-5 lg:col-span-4 flex flex-col h-full justify-start space-y-5 mt-2">
             
-            <div>
-              <h1 className="text-4xl font-black text-gray-900 tracking-tight mb-2">
-                {productDetails.name}
-              </h1>
-              <p className="text-gray-500 font-medium text-lg">
-                by <span className="text-brand-blue underline cursor-pointer hover:text-blue-700">{productDetails.developer}</span>
-              </p>
+            <div className="flex justify-between items-start">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight mb-2">
+                  {productDetails.name}
+                </h1>
+                <p className="text-gray-500 font-medium">
+                  by <span className="text-brand-blue hover:underline cursor-pointer">{productDetails.developer}</span>
+                </p>
+              </div>
+
+              {/* TOMBOL LIKE (ANIMATED) */}
+              <button 
+                onClick={() => setIsLiked(!isLiked)}
+                className={`
+                  p-3 rounded-full transition-all duration-300 transform active:scale-90
+                  ${isLiked ? 'bg-red-50 text-red-500 shadow-md shadow-red-100' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}
+                `}
+              >
+                {/* SVG Heart */}
+                <svg 
+                  className={`w-6 h-6 transition-all duration-300 ${isLiked ? 'fill-current' : 'fill-none'}`} 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
             </div>
 
-            {/* Tombol Action (Like/Share) - Placeholder Visual */}
-            <div className="flex gap-3">
-               <button className="p-3 rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 transition-colors">
-                 ❤️
-               </button>
-               <button className="p-3 rounded-full bg-gray-100 hover:bg-blue-50 hover:text-blue-500 transition-colors">
-                 🔗
-               </button>
-            </div>
-
-            {/* Tombol "Dummy" Beli Sekarang - Scroll ke bawah */}
-            <div className="bg-white p-6 rounded-2xl border border-blue-100 shadow-lg shadow-blue-100/50 mt-4">
-                <p className="text-sm text-gray-500 mb-1">Mulai Dari</p>
-                <div className="flex items-end gap-2 mb-4">
-                   <span className="text-3xl font-black text-brand-blue">Rp 2.590</span>
-                   {/* <span className="text-gray-400 text-sm mb-1.5">/ item</span> */}
+            {/* Price Box */}
+            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-lg shadow-blue-500/5 mt-2">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Harga Terbaik</p>
+                <div className="flex items-baseline gap-1 mb-4">
+                   <span className="text-sm font-bold text-brand-blue mb-1">Rp</span>
+                   <span className="text-4xl font-black text-gray-900">2.590</span>
+                   <span className="text-gray-400 text-sm font-medium">/ item</span>
                 </div>
                 <button 
                   onClick={scrollToSelection}
-                  className="w-full bg-brand-blue text-white py-3.5 rounded-xl font-bold text-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-300/50 transition-all transform hover:-translate-y-0.5"
+                  className="w-full bg-brand-blue text-white py-3 rounded-xl font-bold text-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-brand-blue/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  Beli Sekarang
+                  Pilih Item ↓
                 </button>
             </div>
 
           </div>
-
         </div>
       </div>
     </section>

@@ -4,7 +4,7 @@ import ProductSelectionSection from '../section/product/ProductSelectionSection'
 
 const ProductDetail: React.FC = () => {
   return (
-    <main className="bg-gray-50 min-h-screen pt-16">
+    <main className="bg-white min-h-screen pt-16">
       {/* Section Atas: Banner & Info Game */}
       <ProductTopSection />
       
