@@ -1,34 +1,45 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+// Import Halaman Auth
 import Register from './pages/Auth/Register';
 import Login from './pages/Auth/Login';
+
+// Import Komponen UI
 import Navbar from './components/ui/Navbar';
-import LandingPage from './pages/LandingPage';
 import Footer from './components/ui/Footer';
 
-// Import Halaman Baru
+// Import Halaman Utama
+import LandingPage from './pages/LandingPage';
 import ProductDetail from './pages/ProductDetail';
+import ProductCatalog from './pages/ProductCatalog'; // <--- Import Page ini saja
 
 function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-white font-sans flex flex-col">
         
+        {/* Navbar (Fixed position di dalam komponennya, jadi butuh padding di konten utama) */}
         <Navbar />
 
+        {/* Container Utama: pt-16 untuk kompensasi tinggi Navbar */}
         <div className="pt-16 pb-10 flex-grow">
           <Routes>
+            {/* Halaman Depan */}
             <Route path="/" element={<LandingPage />} />
             
+            {/* Auth */}
             <Route path="/auth/register" element={<Register />} /> 
             <Route path="/auth/login" element={<Login />} />
             
-            {/* ROUTE BARU: Transaksi Detail */}
-            {/* Menggunakan parameter :slug agar dinamis (misal: /transaction/fish-it) */}
+            {/* ROUTE BARU: Halaman Catalog (Berisi DisplaySection dkk) */}
+            <Route path="/products" element={<ProductCatalog />} />
+
+            {/* Transaksi Detail (Dinamis berdasarkan slug) */}
             <Route path="/transaction/:slug" element={<ProductDetail />} /> 
 
-            <Route path="/transactions" element={<div className="max-w-7xl mx-auto px-4"><h1>Riwayat Transaksi</h1></div>} />
-            <Route path="*" element={<div className="text-center mt-10"><h1>404 - Halaman Tidak Ditemukan</h1></div>} />
+            {/* Placeholder Pages */}
+            <Route path="/transactions" element={<div className="max-w-7xl mx-auto px-4 mt-8"><h1>Riwayat Transaksi</h1></div>} />
+            <Route path="*" element={<div className="text-center mt-20"><h1>404 - Halaman Tidak Ditemukan</h1></div>} />
           </Routes>
         </div>
 

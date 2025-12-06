@@ -1,7 +1,5 @@
 // src/section/product/ProductTopSection.tsx
 import React, { useState } from 'react';
-// src/section/product/ProductTopSection.tsx
-import React, { useState } from 'react';
 import { productDetails } from '../../data/mockData';
 
 const ProductTopSection: React.FC = () => {
