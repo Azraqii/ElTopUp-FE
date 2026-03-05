@@ -71,7 +71,7 @@ const RobuxSection: React.FC = () => {
     const STATS = [
         { target: 42226836, suffix: '+', duration: 2200, label: 'RBX Terjual',        sublabel: 'Total RBX yang udah terjual' },
         { target: 99709,    suffix: '+', duration: 1800, label: 'Total Pesanan',       sublabel: 'Pesanan udah diproses' },
-        { target: 4,        suffix: '+', duration: 1200, label: 'Tahun Beroperasi',    sublabel: 'Pengalaman melayani pembeli' },
+        { target: 8,        suffix: '+', duration: 1200, label: 'Tahun Beroperasi',    sublabel: 'Pengalaman melayani pembeli' },
     ];
 
     return (
