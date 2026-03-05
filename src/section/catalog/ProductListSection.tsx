@@ -11,24 +11,24 @@ const ProductListSection: React.FC = () => {
     // --- BARIS 1: GAME AKTIF + 1 FILLER ---
     {
       id: 1,
-      title: "Fish It!",
+      title: "Coming Soon",
       image: FishItImg,
       href: "/transaction/fish-it",
-      isComingSoon: false,
+      isComingSoon: true,
     },
     {
       id: 2,
-      title: "Steal A Brainrot",
+      title: "Coming Soon",
       image: StealABrainrotImg,
       href: "/transaction/steal-a-brainrot",
-      isComingSoon: false,
+      isComingSoon: true,
     },
     {
       id: 3,
-      title: "Grow A Garden",
+      title: "Coming Soon",
       image: GrowAGardenImg,
       href: "/transaction/grow-a-garden",
-      isComingSoon: false,
+      isComingSoon: true,
     },
     { 
       id: 4, 

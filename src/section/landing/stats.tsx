@@ -1,17 +1,17 @@
 // src/section/landing/robux-section.tsx — Stats / Build-Trust Section
 import React, { useEffect, useRef, useState } from 'react';
 
-// ─── Mock data transaksi terbaru ─────────────────────────────────────────────
-const RECENT_TRANSACTIONS = [
-    { user: 'xNovaRBX',     amount: 2500,   time: '2 menit lalu' },
-    { user: 'BloxMaster99', amount: 1000,   time: '5 menit lalu' },
-    { user: 'iQynnn',       amount: 500,    time: '8 menit lalu' },
-    { user: 'starfall_rbx', amount: 10000,  time: '12 menit lalu' },
-    { user: 'HayashiKun',   amount: 5000,   time: '15 menit lalu' },
-    { user: 'Zenitsu_gg',   amount: 100,    time: '18 menit lalu' },
-    { user: 'ProGamerzID',  amount: 2500,   time: '21 menit lalu' },
-    { user: 'cloudy_rbx',   amount: 500,    time: '24 menit lalu' },
-];
+// ─── Mock data transaksi terbaru (sementara disembunyikan) ─────────────────────────────────────────
+// const RECENT_TRANSACTIONS = [
+//     { user: 'xNovaRBX',     amount: 2500,   time: '2 menit lalu' },
+//     { user: 'BloxMaster99', amount: 1000,   time: '5 menit lalu' },
+//     { user: 'iQynnn',       amount: 500,    time: '8 menit lalu' },
+//     { user: 'starfall_rbx', amount: 10000,  time: '12 menit lalu' },
+//     { user: 'HayashiKun',   amount: 5000,   time: '15 menit lalu' },
+//     { user: 'Zenitsu_gg',   amount: 100,    time: '18 menit lalu' },
+//     { user: 'ProGamerzID',  amount: 2500,   time: '21 menit lalu' },
+//     { user: 'cloudy_rbx',   amount: 500,    time: '24 menit lalu' },
+// ];
 
 // ─── Animated Counter Hook ───────────────────────────────────────────────────
 const useCountUp = (target: number, duration: number, started: boolean) => {
@@ -44,12 +44,12 @@ interface StatItemProps {
 const StatItem: React.FC<StatItemProps> = ({ target, suffix, duration, label, sublabel, started }) => {
     const count = useCountUp(target, duration, started);
     return (
-        <div className="flex flex-col items-center text-center px-6">
-            <p className="text-4xl md:text-5xl font-extrabold text-brand-blue tracking-tight tabular-nums">
+        <div className="flex flex-col items-center text-center px-6 py-8">
+            <p className="text-6xl md:text-7xl font-extrabold text-brand-blue tracking-tight tabular-nums">
                 {count.toLocaleString('id-ID')}{suffix}
             </p>
-            <p className="mt-2 font-bold text-gray-900 text-base">{label}</p>
-            <p className="text-gray-500 text-sm mt-0.5">{sublabel}</p>
+            <p className="mt-3 font-bold text-gray-900 text-lg">{label}</p>
+            <p className="text-gray-500 text-base mt-1">{sublabel}</p>
         </div>
     );
 };
@@ -78,25 +78,19 @@ const RobuxSection: React.FC = () => {
         <section
             id="robux-section"
             ref={sectionRef}
-            className="relative bg-gradient-to-b from-gray-50 to-white py-20 overflow-hidden"
+            className="relative bg-blue-50 py-20 overflow-hidden"
         >
-            {/* Glow dekorasi */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl -mr-32 -mt-20 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-100/40 rounded-full blur-3xl -ml-20 pointer-events-none" />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex items-center justify-center min-h-[260px]">
 
                 {/* ── Angka Statistik ── */}
-                <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100 mb-14">
+                <div className="w-full grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
                     {STATS.map((s) => (
                         <StatItem key={s.label} {...s} started={started} />
                     ))}
                 </div>
 
-                {/* Divider */}
-                <div className="border-t border-gray-100 mb-10" />
-
-                {/* ── Transaksi Sukses Terbaru ── */}
+                {/* ── Transaksi Sukses Terbaru (sementara disembunyikan) ──
                 <div>
                     <div className="flex items-center gap-2.5 mb-6">
                         <span className="relative flex h-2.5 w-2.5">
@@ -126,6 +120,7 @@ const RobuxSection: React.FC = () => {
                         ))}
                     </div>
                 </div>
+                */}
             </div>
         </section>
     );

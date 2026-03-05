@@ -7,7 +7,7 @@ import Phone from "../../assets/Phone.svg";
 const Footer: React.FC = () => {
     return (
         // Footer Section
-        <footer className="bg-brand-light/30 pt-10 pb-6 border-t border-brand-light">
+        <footer className="bg-blue-50 pt-10 mt-[-38px] pb-10 border-t-2 border-blue-200">
             {/* div pembatas */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 text-gray-700">

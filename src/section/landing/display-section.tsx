@@ -40,27 +40,30 @@ const DisplaySection: React.FC = () => {
             {/* Card 1: Fish It! */}
             <div className="min-w-[280px] md:min-w-0 snap-center mr-4 md:mr-0">
               <DisplayCard 
-                title="Fish It!" 
+                title="Coming Soon" 
                 imageSrc={imgFishIt} 
                 href="/transaction/fish-it" 
+                isComingSoon={true}
               />
             </div>
 
             {/* Card 2: Steal A Brainrot */}
             <div className="min-w-[280px] md:min-w-0 snap-center mr-4 md:mr-0">
               <DisplayCard 
-                title="Steal A Brainrot" 
+                title="Coming Soon" 
                 imageSrc={imgStealABrainrot} 
                 href="/transaction/steal-a-brainrot" 
+                isComingSoon={true}
               />
             </div>
 
             {/* Card 3: Grow A Garden */}
             <div className="min-w-[280px] md:min-w-0 snap-center mr-4 md:mr-0">
               <DisplayCard 
-                title="Grow A Garden" 
+                title="Coming Soon" 
                 imageSrc={imgGrowAGarden} 
                 href="/transaction/grow-a-garden" 
+                isComingSoon={true}
               />
             </div>
 

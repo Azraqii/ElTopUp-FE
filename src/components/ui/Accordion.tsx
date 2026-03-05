@@ -14,7 +14,7 @@ const Accordion: React.FC<AccordionProps> = ({ title, content, className = '' })
   return (
     // Menambahkan ${className} dan 'h-full' agar kartu mengisi tinggi container grid
     // flex flex-col justify-start memastikan konten tertata rapi saat kartu memanjang
-    <div className={`rounded-xl transition-all duration-300 border border-transparent h-full flex flex-col ${isOpen ? 'bg-brand-blue shadow-lg ring-2 ring-blue-200' : 'bg-gradient-to-r from-blue-400 to-brand-blue shadow-md hover:shadow-xl hover:-translate-y-1'} ${className}`}>
+    <div className={`rounded-xl transition-all duration-300 border border-transparent h-full flex flex-col bg-brand-blue ${isOpen ? 'shadow-lg ring-2 ring-blue-200' : 'opacity-90 shadow-md hover:opacity-100 hover:shadow-xl hover:-translate-y-1'} ${className}`}>
       <button
         className="flex justify-between items-center w-full p-5 text-left focus:outline-none group"
         onClick={() => setIsOpen(!isOpen)}

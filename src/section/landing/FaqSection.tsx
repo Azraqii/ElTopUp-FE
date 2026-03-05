@@ -31,9 +31,7 @@ const FaqSection: React.FC = () => {
   ];
 
   return (
-    <section className="bg-white py-16 md:py-24 relative overflow-hidden">
-      {/* Background Glow Dekoratif (Opsional, agar senada dengan hero) */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-100/50 rounded-full blur-3xl pointer-events-none -z-10"></div>
+    <section id="faq-section" className="bg-blue-50 py-16 md:py-20 relative overflow-hidden">
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
