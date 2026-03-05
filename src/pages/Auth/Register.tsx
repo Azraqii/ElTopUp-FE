@@ -46,8 +46,8 @@ const Register: React.FC = () => {
       navigate('/'); 
 
     } catch (err: any) {
-      // Tangani error dari backend (misalnya, email sudah terdaftar)
-      const message = err.response?.data?.message || 'Pendaftaran gagal. Coba lagi.';
+      // Tangani error dari backend - format: { error: "message" }
+      const message = err.response?.data?.error || 'Pendaftaran gagal. Coba lagi nanti.';
       setError(message);
     } finally {
       setIsLoading(false);

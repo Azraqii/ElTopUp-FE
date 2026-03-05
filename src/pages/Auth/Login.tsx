@@ -42,8 +42,8 @@ const Login: React.FC = () => {
       navigate('/'); 
 
     } catch (err: any) {
-      // Tangani error (misalnya, email atau password tidak valid)
-      const message = err.response?.data?.message || 'Login gagal. Email atau Password salah.';
+      // Tangani error dari backend - format: { error: "message" }
+      const message = err.response?.data?.error || 'Login gagal. Coba lagi nanti.';
       setError(message);
     } finally {
       setIsLoading(false);
