@@ -1,13 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import GroupAvatar from "../../assets/Group_Avatar.svg";
 
 const home: React.FC = () => {
+    const navigate = useNavigate();
+
     return (
          <section className="relative bg-white overflow-hidden pt-20 pb-32">
             
             {/* Glow Effect */}
             <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-400/30 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-300/40 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
 
             {/* div pembatas */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -44,7 +46,17 @@ const home: React.FC = () => {
                             <span className="font-semibold text-gray-900 underline decoration-brand-blue decoration-2 underline-offset-2">
                             Fast, Secure, Trusted
                             </span>
-                        </p>                               
+                        </p>
+
+                        {/* CTA Buttons */}
+                        <div className="mt-8 flex flex-wrap gap-3 justify-center lg:justify-start">
+                            <button
+                                onClick={() => navigate('/checkout/robux')}
+                                className="bg-brand-blue text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-lg shadow-brand-blue/30 hover:bg-blue-600 hover:-translate-y-1 active:translate-y-0 transition-all"
+                            >
+                                Top Up Sekarang →
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

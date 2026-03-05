@@ -1,37 +1,60 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+// Import Halaman Auth
 import Register from './pages/Auth/Register';
 import Login from './pages/Auth/Login';
-import Navbar from './components/ui/Navbar';
 
-import LandingPage from './pages/LandingPage';
+// Import Komponen UI
+import Navbar from './components/ui/Navbar';
 import Footer from './components/ui/Footer';
+
+// Import Halaman Utama
+import LandingPage from './pages/LandingPage';
+import ProductDetail from './pages/ProductDetail';
+import ProductCatalog from './pages/ProductCatalog';
+import RobuxCheckout from './pages/RobuxCheckout';
+import Bantuan from './pages/Bantuan';
+import TentangKami from './pages/TentangKami';
+import SyaratKetentuan from './pages/SyaratKetentuan';
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-white font-sans">
-        {/* 1. Navbar ditaruh di LUAR <Routes> 
-          Agar muncul di semua halaman (Home, Login, Register) secara otomatis. */}
+      <div className="min-h-screen bg-white font-sans flex flex-col">
+        
+        {/* Navbar (Fixed position di dalam komponennya, jadi butuh padding di konten utama) */}
         <Navbar />
 
-        {/* 2. Wrapper Konten*/}
-        <div className="pt-16 pb-10">
+        {/* Container Utama: pt-16 untuk kompensasi tinggi Navbar */}
+        <div className="pt-16 pb-10 flex-grow">
           <Routes>
-            {/* Route Utama (Home) */}
-            <Route path="/" element={
-              <LandingPage />
-            } />
+            {/* Halaman Depan */}
+            <Route path="/" element={<LandingPage />} />
             
-            {/* Route Autentikasi */}
+            {/* Auth */}
             <Route path="/auth/register" element={<Register />} /> 
             <Route path="/auth/login" element={<Login />} />
             
-            {/* Route Lainnya */}
-            <Route path="/transactions" element={<div className="max-w-7xl mx-auto px-4"><h1>Riwayat Transaksi</h1></div>} />
-            <Route path="*" element={<div className="text-center mt-10"><h1>404 - Halaman Tidak Ditemukan</h1></div>} />
+            {/* ROUTE BARU: Halaman Catalog (Berisi DisplaySection dkk) */}
+            <Route path="/products" element={<ProductCatalog />} />
+
+            {/* Transaksi Detail (Dinamis berdasarkan slug) */}
+            <Route path="/transaction/:slug" element={<ProductDetail />} />
+
+            {/* Robux Checkout Flow */}
+            <Route path="/checkout/robux" element={<RobuxCheckout />} />
+
+            {/* Info Pages */}
+            <Route path="/bantuan" element={<Bantuan />} />
+            <Route path="/tentang-kami" element={<TentangKami />} />
+            <Route path="/syarat-ketentuan" element={<SyaratKetentuan />} />
+
+            {/* Placeholder Pages */}
+            <Route path="/transactions" element={<div className="max-w-7xl mx-auto px-4 mt-8"><h1>Riwayat Transaksi</h1></div>} />
+            <Route path="*" element={<div className="text-center mt-20"><h1>404 - Halaman Tidak Ditemukan</h1></div>} />
           </Routes>
         </div>
+
         <Footer />
       </div>
     </BrowserRouter>
