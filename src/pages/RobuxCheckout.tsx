@@ -1,5 +1,5 @@
 // src/pages/RobuxCheckout.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 // ─── Konstanta ──────────────────────────────────────────────────────────────
@@ -143,6 +143,11 @@ const OrderSummary: React.FC<SummaryProps> = ({ amount, subtotal, fee, total, pa
 const RobuxCheckout: React.FC = () => {
     const navigate = useNavigate();
 
+    // Scroll to top on mount
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }, []);
+
     const [currentStep, setCurrentStep] = useState<Step>(1);
 
     // Step 1: form input
@@ -206,6 +211,7 @@ const RobuxCheckout: React.FC = () => {
         await new Promise((r) => setTimeout(r, 1500));
         setIsPaying(false);
         setPaymentDone(true);
+        window.scrollTo({ top: 0, behavior: 'instant' });
     };
 
     const goToStep = (step: Step) => {
