@@ -1,9 +1,10 @@
 // src/pages/RobuxCheckout.tsx
 import React, { useState } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
-// ─── Konstanta Harga ─────────────────────────────────────────────────────────
+// ─── Konstanta ──────────────────────────────────────────────────────────────
 const PRICE_PER_1000_IDR = Math.round(4.5 * 16950); // 4.5 USD × 16.950 = 76.275
+const QUICK_AMOUNTS = [100, 500, 1000, 2500, 5000, 10000];
 const PAYMENT_FEES: Record<string, number> = {
     qris: 500,
     bca: 0,
@@ -25,11 +26,6 @@ const computeSubtotal = (amount: number) =>
 const computeGamePassPrice = (amount: number) => Math.ceil(amount / 0.7);
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-interface CheckoutState {
-    username: string;
-    amount: number;
-}
-
 type Step = 1 | 2 | 3;
 type PaymentMethod = 'qris' | 'bca' | 'mandiri';
 
@@ -39,6 +35,13 @@ const STEPS = [
     { id: 2, label: 'Game Pass' },
     { id: 3, label: 'Pembayaran' },
 ];
+
+// ─── Helpers input ────────────────────────────────────────────────────────────
+const parseAmount = (val: string) => {
+    const cleaned = val.replace(/\D/g, '');
+    if (!cleaned) return null;
+    return Math.min(parseInt(cleaned), 100_000);
+};
 
 const StepIndicator: React.FC<{ currentStep: Step }> = ({ currentStep }) => (
     <div className="flex items-center justify-center w-full mb-10">
@@ -137,11 +140,13 @@ const OrderSummary: React.FC<SummaryProps> = ({ amount, subtotal, fee, total, pa
 
 // ─── Halaman Utama ────────────────────────────────────────────────────────────
 const RobuxCheckout: React.FC = () => {
-    const location = useLocation();
     const navigate = useNavigate();
-    const routeState = location.state as CheckoutState | null;
 
     const [currentStep, setCurrentStep] = useState<Step>(1);
+
+    // Step 1: form input
+    const [username, setUsername] = useState('');
+    const [rawAmount, setRawAmount] = useState('100');
 
     // Step 2: validasi game pass
     const [isValidating, setIsValidating] = useState(false);
@@ -153,23 +158,28 @@ const RobuxCheckout: React.FC = () => {
     const [isPaying, setIsPaying] = useState(false);
     const [paymentDone, setPaymentDone] = useState(false);
 
-    // Guard: jika tidak ada state (akses langsung url), redirect ke home
-    if (!routeState?.username || !routeState?.amount) {
-        return (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-                <p className="text-gray-500 mb-4">Sesi order tidak ditemukan atau sudah berakhir.</p>
-                <Link to="/" className="bg-brand-blue text-white font-bold px-6 py-3 rounded-xl hover:bg-blue-600 transition-all">
-                    Kembali ke Beranda
-                </Link>
-            </div>
-        );
-    }
-
-    const { username, amount } = routeState;
-    const subtotal = computeSubtotal(amount);
+    const numAmount = parseInt(rawAmount) || 0;
+    const subtotal = computeSubtotal(numAmount);
     const fee = PAYMENT_FEES[paymentMethod] ?? 0;
     const total = subtotal + fee;
-    const gamePassPrice = computeGamePassPrice(amount);
+    const gamePassPrice = computeGamePassPrice(numAmount);
+
+    const handleAmountChange = (val: string) => {
+        const n = parseAmount(val);
+        setRawAmount(n !== null ? n.toString() : '');
+    };
+
+    const handleStep1Next = () => {
+        if (!username.trim()) {
+            alert('Mohon isi username Roblox kamu!');
+            return;
+        }
+        if (numAmount < 50) {
+            alert('Minimal pembelian adalah 50 Robux!');
+            return;
+        }
+        setCurrentStep(2);
+    };
 
     // ── Mock validasi game pass (placeholder backend) ──
     const handleValidate = async () => {
@@ -202,7 +212,11 @@ const RobuxCheckout: React.FC = () => {
 
                 {/* Back button */}
                 <button
-                    onClick={() => (currentStep > 1 ? setCurrentStep((s) => (s - 1) as Step) : navigate('/'))}
+                    onClick={() => {
+                        if (currentStep === 1) navigate('/');
+                        else if (currentStep === 2) { setIsValidated(false); setValidationError(null); setCurrentStep(1); }
+                        else setCurrentStep((s) => (s - 1) as Step);
+                    }}
                     className="flex items-center gap-2 text-gray-500 hover:text-gray-800 text-sm font-medium mb-6 transition-colors group"
                 >
                     <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -229,7 +243,7 @@ const RobuxCheckout: React.FC = () => {
                         {/* ════════════ STEP 1: Detail Akun ════════════ */}
                         {currentStep === 1 && (
                             <>
-                                {/* Akun Kamu */}
+                                {/* Card: Username */}
                                 <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
                                     <div className="flex items-center gap-2 mb-4">
                                         <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -239,24 +253,25 @@ const RobuxCheckout: React.FC = () => {
                                         </div>
                                         <div>
                                             <h2 className="font-bold text-gray-900">Akun Kamu</h2>
-                                            <p className="text-xs text-gray-400">RBX akan dikirim ke username ini</p>
+                                            <p className="text-xs text-gray-400">Masukkan username akun yang mau diisi RBX</p>
                                         </div>
                                     </div>
-                                    <div className="bg-gray-50 rounded-xl px-5 py-3.5 flex items-center justify-between">
-                                        <div>
-                                            <p className="text-xs text-gray-400 mb-0.5">Username Roblox</p>
-                                            <p className="font-bold text-gray-900 text-lg">{username}</p>
-                                        </div>
-                                        <button
-                                            onClick={() => navigate('/')}
-                                            className="text-xs text-brand-blue font-semibold hover:underline"
-                                        >
-                                            Ubah
-                                        </button>
-                                    </div>
+                                    <label htmlFor="username" className="block text-sm font-semibold text-gray-600 mb-2">
+                                        Username Roblox
+                                    </label>
+                                    <input
+                                        id="username"
+                                        type="text"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        autoFocus
+                                        className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 rounded-2xl px-5 py-4 text-base font-medium text-gray-800 outline-none transition-all placeholder:text-gray-300"
+                                        placeholder="Contoh: RobloxPlayer123"
+                                    />
+                                    <p className="text-xs text-gray-400 mt-2">RBX bakal dikirim ke username ini.</p>
                                 </div>
 
-                                {/* Detail Pesanan */}
+                                {/* Card: Pilih Jumlah RBX */}
                                 <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
                                     <div className="flex items-center gap-2 mb-4">
                                         <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -265,19 +280,43 @@ const RobuxCheckout: React.FC = () => {
                                             </svg>
                                         </div>
                                         <div>
-                                            <h2 className="font-bold text-gray-900">Detail Pesanan</h2>
-                                            <p className="text-xs text-gray-400">Konfirmasi jumlah Robux yang kamu beli</p>
+                                            <h2 className="font-bold text-gray-900">Pilih Jumlah RBX</h2>
+                                            <p className="text-xs text-gray-400">Isi jumlah RBX yang kamu mau atau pilih di bawah</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between bg-gradient-to-r from-blue-50 to-white rounded-xl px-5 py-4 border border-blue-100">
-                                        <div>
-                                            <p className="text-xs text-gray-400 mb-0.5">Jumlah Robux</p>
-                                            <p className="font-extrabold text-gray-900 text-2xl">{amount.toLocaleString('id-ID')} <span className="text-brand-blue text-xl">RBX</span></p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-xs text-gray-400 mb-0.5">Subtotal</p>
-                                            <p className="font-extrabold text-gray-900 text-lg">{formatIDR(subtotal)}</p>
-                                        </div>
+                                    <label htmlFor="rbx-amount" className="block text-sm font-semibold text-gray-600 mb-2">
+                                        Mau beli berapa RBX?
+                                    </label>
+                                    <div className="relative mb-1">
+                                        <input
+                                            id="rbx-amount"
+                                            type="text"
+                                            inputMode="numeric"
+                                            value={rawAmount}
+                                            onChange={(e) => handleAmountChange(e.target.value)}
+                                            className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 rounded-2xl px-5 py-4 text-base font-medium text-gray-800 outline-none transition-all pr-16 placeholder:text-gray-300"
+                                            placeholder="100"
+                                        />
+                                        <span className="absolute right-5 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">RBX</span>
+                                    </div>
+                                    <p className="text-xs text-gray-400 mb-4">Minimum 50 · Maksimum 100.000 RBX</p>
+
+                                    <p className="text-sm font-semibold text-gray-500 mb-2">Atau pilih cepat:</p>
+                                    <div className="grid grid-cols-3 gap-2.5">
+                                        {QUICK_AMOUNTS.map((amt) => (
+                                            <button
+                                                key={amt}
+                                                onClick={() => setRawAmount(amt.toString())}
+                                                className={`rounded-xl py-2.5 px-3 border-2 text-sm font-bold transition-all
+                                                    ${numAmount === amt
+                                                        ? 'bg-brand-blue border-brand-blue text-white shadow-md shadow-brand-blue/30'
+                                                        : 'bg-white border-gray-100 text-gray-700 hover:border-brand-blue/50 hover:text-brand-blue'
+                                                    }`}
+                                            >
+                                                {amt.toLocaleString('id-ID')}
+                                                <span className="block text-[10px] font-normal opacity-70">RBX</span>
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
 
@@ -285,14 +324,14 @@ const RobuxCheckout: React.FC = () => {
                                 <div className="bg-brand-blue/5 border border-brand-blue/20 rounded-2xl p-5">
                                     <p className="text-sm font-semibold text-brand-blue mb-2">Bagaimana cara kerjanya?</p>
                                     <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
-                                        <li>Konfirmasi detail akun dan jumlah RBX</li>
-                                        <li>Buat Game Pass di akun Roblox kamu dengan harga tertentu</li>
+                                        <li>Masukkan username & jumlah RBX yang diinginkan</li>
+                                        <li>Buat Game Pass di Roblox dengan harga yang kami tentukan</li>
                                         <li>Selesaikan pembayaran — RBX otomatis masuk dalam &lt;5 menit</li>
                                     </ol>
                                 </div>
 
                                 <button
-                                    onClick={() => setCurrentStep(2)}
+                                    onClick={handleStep1Next}
                                     className="bg-brand-blue text-white font-bold text-base py-4 px-8 rounded-2xl shadow-lg shadow-brand-blue/30 hover:bg-blue-600 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2 w-fit"
                                 >
                                     Lanjut Buat Game Pass
@@ -603,7 +642,7 @@ const RobuxCheckout: React.FC = () => {
                     {/* ─── Sidebar: Ringkasan ─── */}
                     <div className="lg:sticky lg:top-24 self-start">
                         <OrderSummary
-                            amount={amount}
+                            amount={numAmount}
                             subtotal={subtotal}
                             fee={fee}
                             total={total}
@@ -611,17 +650,19 @@ const RobuxCheckout: React.FC = () => {
                         />
 
                         {/* Info akun */}
-                        <div className="mt-4 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
-                            <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 bg-brand-blue rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                                    {username.charAt(0).toUpperCase()}
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-400">Dikirim ke</p>
-                                    <p className="font-bold text-gray-900 text-sm">@{username}</p>
+                        {username && (
+                            <div className="mt-4 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 bg-brand-blue rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                        {username.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-400">Dikirim ke</p>
+                                        <p className="font-bold text-gray-900 text-sm">@{username}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>

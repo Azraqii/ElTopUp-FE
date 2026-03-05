@@ -1,7 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import GroupAvatar from "../../assets/Group_Avatar.svg";
 
 const home: React.FC = () => {
+    const navigate = useNavigate();
+
     return (
          <section className="relative bg-white overflow-hidden pt-20 pb-32">
             
@@ -44,7 +47,23 @@ const home: React.FC = () => {
                             <span className="font-semibold text-gray-900 underline decoration-brand-blue decoration-2 underline-offset-2">
                             Fast, Secure, Trusted
                             </span>
-                        </p>                               
+                        </p>
+
+                        {/* CTA Buttons */}
+                        <div className="mt-8 flex flex-wrap gap-3 justify-center lg:justify-start">
+                            <button
+                                onClick={() => navigate('/checkout/robux')}
+                                className="bg-brand-blue text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-lg shadow-brand-blue/30 hover:bg-blue-600 hover:-translate-y-1 active:translate-y-0 transition-all"
+                            >
+                                Top Up Sekarang →
+                            </button>
+                            <a
+                                href="#robux-section"
+                                className="bg-white text-brand-blue font-bold text-lg py-4 px-8 rounded-2xl border-2 border-brand-blue/20 hover:border-brand-blue hover:bg-blue-50 transition-all"
+                            >
+                                Lihat Harga
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
