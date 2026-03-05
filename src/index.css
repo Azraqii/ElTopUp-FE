@@ -5,6 +5,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth scroll global */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Animasi Panel Slide Up */
 @keyframes slide-up {
   from {

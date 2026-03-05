@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 // ─── Konstanta ──────────────────────────────────────────────────────────────
-const PRICE_PER_1000_IDR = Math.round(4.5 * 16950); // 4.5 USD × 16.950 = 76.275
+const PRICE_PER_1000_IDR = Math.round(4.7 * 16950); // 4.7 USD × 16.950 = 79.665
 const QUICK_AMOUNTS = [100, 500, 1000, 2500, 5000, 10000];
 const PAYMENT_FEES: Record<string, number> = {
     qris: 500,
@@ -19,11 +19,12 @@ const formatIDR = (n: number) =>
         maximumFractionDigits: 0,
     }).format(n);
 
-const computeSubtotal = (amount: number) =>
-    Math.ceil((amount * PRICE_PER_1000_IDR) / 1000);
-
 /** Roblox takes 30% marketplace tax, so seller must list at ceil(amount / 0.7) */
 const computeGamePassPrice = (amount: number) => Math.ceil(amount / 0.7);
+
+/** Price user pays is based on the game pass listing price (after-tax amount) */
+const computeSubtotal = (amount: number) =>
+    Math.ceil((computeGamePassPrice(amount) * PRICE_PER_1000_IDR) / 1000);
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 type Step = 1 | 2 | 3;
@@ -157,6 +158,7 @@ const RobuxCheckout: React.FC = () => {
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('qris');
     const [isPaying, setIsPaying] = useState(false);
     const [paymentDone, setPaymentDone] = useState(false);
+    const [termsAccepted, setTermsAccepted] = useState(false);
 
     const numAmount = parseInt(rawAmount) || 0;
     const subtotal = computeSubtotal(numAmount);
@@ -178,7 +180,7 @@ const RobuxCheckout: React.FC = () => {
             alert('Minimal pembelian adalah 50 Robux!');
             return;
         }
-        setCurrentStep(2);
+        goToStep(2);
     };
 
     // ── Mock validasi game pass (placeholder backend) ──
@@ -206,6 +208,11 @@ const RobuxCheckout: React.FC = () => {
         setPaymentDone(true);
     };
 
+    const goToStep = (step: Step) => {
+        setCurrentStep(step);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+
     return (
         <div className="min-h-screen bg-gray-50/50 py-10">
             <div className="max-w-5xl mx-auto px-4 sm:px-6">
@@ -214,8 +221,8 @@ const RobuxCheckout: React.FC = () => {
                 <button
                     onClick={() => {
                         if (currentStep === 1) navigate('/');
-                        else if (currentStep === 2) { setIsValidated(false); setValidationError(null); setCurrentStep(1); }
-                        else setCurrentStep((s) => (s - 1) as Step);
+                        else if (currentStep === 2) { setIsValidated(false); setValidationError(null); goToStep(1); }
+                        else goToStep((currentStep - 1) as Step);
                     }}
                     className="flex items-center gap-2 text-gray-500 hover:text-gray-800 text-sm font-medium mb-6 transition-colors group"
                 >
@@ -235,10 +242,10 @@ const RobuxCheckout: React.FC = () => {
                 <StepIndicator currentStep={currentStep} />
 
                 {/* Layout: Konten + Sidebar */}
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
+                <div className="relative">
 
                     {/* ─── Konten Langkah ─── */}
-                    <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-5 lg:pr-[368px]">
 
                         {/* ════════════ STEP 1: Detail Akun ════════════ */}
                         {currentStep === 1 && (
@@ -442,7 +449,7 @@ const RobuxCheckout: React.FC = () => {
                                                 </div>
                                             </div>
                                             <button
-                                                onClick={() => setCurrentStep(3)}
+                                                onClick={() => goToStep(3)}
                                                 className="w-full bg-brand-blue text-white font-bold text-base py-4 rounded-2xl shadow-lg shadow-brand-blue/30 hover:bg-blue-600 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
                                             >
                                                 Lanjut ke Pembayaran
@@ -605,12 +612,38 @@ const RobuxCheckout: React.FC = () => {
                                             </div>
                                         )}
 
+                                        {/* Checkbox Terms */}
+                                        <label className="flex items-start gap-3 cursor-pointer select-none">
+                                            <div className="relative flex-shrink-0 mt-0.5">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={termsAccepted}
+                                                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                                                    className="sr-only peer"
+                                                />
+                                                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all
+                                                    ${termsAccepted ? 'bg-brand-blue border-brand-blue' : 'bg-white border-gray-300'}`}>
+                                                    {termsAccepted && (
+                                                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <span className="text-sm text-gray-600 leading-relaxed">
+                                                Saya telah membaca dan menyetujui{' '}
+                                                <a href="/syarat-ketentuan" target="_blank" rel="noopener noreferrer" className="text-brand-blue font-semibold hover:underline">
+                                                    Syarat & Ketentuan
+                                                </a>{' '}layanan El Top Up.
+                                            </span>
+                                        </label>
+
                                         {/* Tombol Bayar */}
                                         <button
                                             onClick={paymentMethod === 'qris' ? handlePay : undefined}
-                                            disabled={isPaying || paymentMethod !== 'qris'}
+                                            disabled={isPaying || paymentMethod !== 'qris' || !termsAccepted}
                                             className={`w-full py-4 rounded-2xl font-bold text-base transition-all flex items-center justify-center gap-2
-                                                ${isPaying || paymentMethod !== 'qris'
+                                                ${isPaying || paymentMethod !== 'qris' || !termsAccepted
                                                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                                     : 'bg-brand-blue text-white shadow-lg shadow-brand-blue/30 hover:bg-blue-600 hover:-translate-y-0.5'
                                                 }`}
@@ -629,10 +662,6 @@ const RobuxCheckout: React.FC = () => {
                                                 'Metode ini Belum Tersedia'
                                             )}
                                         </button>
-
-                                        <p className="text-xs text-gray-400 text-center">
-                                            Dengan melanjutkan, kamu menyetujui syarat & ketentuan layanan ElTopUp.
-                                        </p>
                                     </>
                                 )}
                             </>
@@ -640,7 +669,7 @@ const RobuxCheckout: React.FC = () => {
                     </div>
 
                     {/* ─── Sidebar: Ringkasan ─── */}
-                    <div className="lg:sticky lg:top-24 self-start">
+                    <div className="mt-6 lg:mt-0 lg:absolute lg:top-0 lg:right-0 lg:w-[340px]">
                         <OrderSummary
                             amount={numAmount}
                             subtotal={subtotal}

@@ -10,9 +10,9 @@ const Navbar: React.FC = () => {
 
     const navLinks = [
         { name: 'Beli Robux', path: '/'},
-        { name : 'Produk', path: '/products'},
-        { name : 'Tentang Kami', path: '/about'},
-        { name : 'Bantuan', path: '/support'},
+        { name: 'Produk', path: '/products'},
+        { name: 'Tentang Kami', path: '/tentang-kami'},
+        { name: 'Bantuan', path: '/bantuan'},
     ];
 
     return (

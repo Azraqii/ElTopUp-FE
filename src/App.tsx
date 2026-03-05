@@ -11,8 +11,11 @@ import Footer from './components/ui/Footer';
 // Import Halaman Utama
 import LandingPage from './pages/LandingPage';
 import ProductDetail from './pages/ProductDetail';
-import ProductCatalog from './pages/ProductCatalog'; // <--- Import Page ini saja
+import ProductCatalog from './pages/ProductCatalog';
 import RobuxCheckout from './pages/RobuxCheckout';
+import Bantuan from './pages/Bantuan';
+import TentangKami from './pages/TentangKami';
+import SyaratKetentuan from './pages/SyaratKetentuan';
 
 function App() {
   return (
@@ -40,6 +43,11 @@ function App() {
 
             {/* Robux Checkout Flow */}
             <Route path="/checkout/robux" element={<RobuxCheckout />} />
+
+            {/* Info Pages */}
+            <Route path="/bantuan" element={<Bantuan />} />
+            <Route path="/tentang-kami" element={<TentangKami />} />
+            <Route path="/syarat-ketentuan" element={<SyaratKetentuan />} />
 
             {/* Placeholder Pages */}
             <Route path="/transactions" element={<div className="max-w-7xl mx-auto px-4 mt-8"><h1>Riwayat Transaksi</h1></div>} />

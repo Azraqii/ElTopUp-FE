@@ -36,31 +36,13 @@ const Footer: React.FC = () => {
                         <h3 className="font-bold text-gray-900 mb-4 text-lg">Shop</h3>
                         <ul className="space-y-3 text-sm">
                             <li>
-                                {/* Link ke Section Robux di Landing Page */}
-                                <a 
-                                    href="/#robux-section" 
-                                    className="hover:text-brand-blue transition-colors"
-                                >
-                                    Beli Robux
-                                </a>
+                                <a href="/checkout/robux" className="hover:text-brand-blue transition-colors">Beli Robux</a>
                             </li>
                             <li>
-                                {/* Link ke halaman Produk */}
-                                <a 
-                                    href="/products" 
-                                    className="hover:text-brand-blue transition-colors"
-                                >
-                                    Produk
-                                </a>
+                                <a href="/products" className="hover:text-brand-blue transition-colors">Produk</a>
                             </li>
                             <li>
-                                {/* Link Other Games (Placeholder) */}
-                                <a 
-                                    href="#" 
-                                    className="hover:text-brand-blue transition-colors"
-                                >
-                                    Other Games
-                                </a>
+                                <a href="#" className="hover:text-brand-blue transition-colors">Other Games</a>
                             </li>
                         </ul>
                     </div>
@@ -113,10 +95,10 @@ const Footer: React.FC = () => {
                     <div>
                         <h3 className="font-bold text-gray-900 mb-4 text-lg">About</h3>
                         <ul className="space-y-3 text-sm">
-                            <li><a href="/help" className="hover:text-brand-blue transition-colors">Bantuan</a></li>
-                            <li><a href="/faq" className="hover:text-brand-blue transition-colors">Pertanyaan Umum</a></li>
-                            <li><a href="/refund-policy" className="hover:text-brand-blue transition-colors">Kebijakan Refund</a></li>
-                            <li><a href="/terms" className="hover:text-brand-blue transition-colors">Syarat & Ketentuan</a></li>
+                            <li><a href="/bantuan" className="hover:text-brand-blue transition-colors">Bantuan</a></li>
+                            <li><a href="/#faq-section" className="hover:text-brand-blue transition-colors">Pertanyaan Umum</a></li>
+                            <li><a href="/tentang-kami" className="hover:text-brand-blue transition-colors">Tentang Kami</a></li>
+                            <li><a href="/syarat-ketentuan" className="hover:text-brand-blue transition-colors">Syarat & Ketentuan</a></li>
                         </ul>
                     </div>
                 </div>  
