@@ -7,14 +7,17 @@ import type { ReactNode} from 'react'; // <-- PENTING: Import tipe secara terpis
 interface User {
   _id: string;
   email: string;
+  name?: string;
   role: string;
   token: string;
+  avatar?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   setUser: (user: User | null) => void;
   isLoading: boolean;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,10 +36,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsLoading(false);
   }, []);
 
+  const logout = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+  };
+
   const value = {
     user,
     setUser,
     isLoading,
+    logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
