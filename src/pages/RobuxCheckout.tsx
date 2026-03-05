@@ -638,9 +638,12 @@ const RobuxCheckout: React.FC = () => {
                                             </div>
                                             <span className="text-sm text-gray-600 leading-relaxed">
                                                 Saya telah membaca dan menyetujui{' '}
-                                                <a href="/syarat-ketentuan" target="_blank" rel="noopener noreferrer" className="text-brand-blue font-semibold hover:underline">
+                                                <Link to="/syarat-ketentuan" target="_blank" rel="noopener noreferrer" className="text-brand-blue font-semibold hover:underline">
                                                     Syarat & Ketentuan
-                                                </a>{' '}layanan El Top Up.
+                                                </Link>{' '}dan{' '}
+                                                <Link to="/kebijakan-privasi" target="_blank" rel="noopener noreferrer" className="text-brand-blue font-semibold hover:underline">
+                                                    Kebijakan Privasi
+                                                </Link>{' '}layanan El Top Up.
                                             </span>
                                         </label>
 

@@ -16,6 +16,7 @@ import RobuxCheckout from './pages/RobuxCheckout';
 import Bantuan from './pages/Bantuan';
 import TentangKami from './pages/TentangKami';
 import SyaratKetentuan from './pages/SyaratKetentuan';
+import KebijakanPrivasi from './pages/KebijakanPrivasi';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
             <Route path="/bantuan" element={<Bantuan />} />
             <Route path="/tentang-kami" element={<TentangKami />} />
             <Route path="/syarat-ketentuan" element={<SyaratKetentuan />} />
+            <Route path="/kebijakan-privasi" element={<KebijakanPrivasi />} />
 
             {/* Placeholder Pages */}
             <Route path="/transactions" element={<div className="max-w-7xl mx-auto px-4 mt-8"><h1>Riwayat Transaksi</h1></div>} />

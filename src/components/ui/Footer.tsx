@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import logoElTopup from "../../assets/eltopup.svg";
 import Instagram from "../../assets/Instagram.svg";
 import Mail from "../../assets/Mail.svg";
@@ -95,10 +96,11 @@ const Footer: React.FC = () => {
                     <div>
                         <h3 className="font-bold text-gray-900 mb-4 text-lg">About</h3>
                         <ul className="space-y-3 text-sm">
-                            <li><a href="/bantuan" className="hover:text-brand-blue transition-colors">Bantuan</a></li>
+                            <li><Link to="/bantuan" className="hover:text-brand-blue transition-colors">Bantuan</Link></li>
                             <li><a href="/#faq-section" className="hover:text-brand-blue transition-colors">Pertanyaan Umum</a></li>
-                            <li><a href="/tentang-kami" className="hover:text-brand-blue transition-colors">Tentang Kami</a></li>
-                            <li><a href="/syarat-ketentuan" className="hover:text-brand-blue transition-colors">Syarat & Ketentuan</a></li>
+                            <li><Link to="/tentang-kami" className="hover:text-brand-blue transition-colors">Tentang Kami</Link></li>
+                            <li><Link to="/syarat-ketentuan" className="hover:text-brand-blue transition-colors">Syarat & Ketentuan</Link></li>
+                            <li><Link to="/kebijakan-privasi" className="hover:text-brand-blue transition-colors">Kebijakan Privasi</Link></li>
                         </ul>
                     </div>
                 </div>  
