@@ -12,6 +12,7 @@ import Footer from './components/ui/Footer';
 import LandingPage from './pages/LandingPage';
 import ProductDetail from './pages/ProductDetail';
 import ProductCatalog from './pages/ProductCatalog'; // <--- Import Page ini saja
+import RobuxCheckout from './pages/RobuxCheckout';
 
 function App() {
   return (
@@ -35,7 +36,10 @@ function App() {
             <Route path="/products" element={<ProductCatalog />} />
 
             {/* Transaksi Detail (Dinamis berdasarkan slug) */}
-            <Route path="/transaction/:slug" element={<ProductDetail />} /> 
+            <Route path="/transaction/:slug" element={<ProductDetail />} />
+
+            {/* Robux Checkout Flow */}
+            <Route path="/checkout/robux" element={<RobuxCheckout />} />
 
             {/* Placeholder Pages */}
             <Route path="/transactions" element={<div className="max-w-7xl mx-auto px-4 mt-8"><h1>Riwayat Transaksi</h1></div>} />
