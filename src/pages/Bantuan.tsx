@@ -9,13 +9,13 @@ const Bantuan: React.FC = () => {
 
             {/* Hero */}
             <div className="bg-gradient-to-br from-blue-50 to-white pt-20 pb-14">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">Hubungi Kami</h1>
                     <p className="text-gray-500 text-lg">Ada pertanyaan atau butuh bantuan? Kami siap membantu kamu!</p>
                 </div>
             </div>
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 -mt-4 space-y-5">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 -mt-4 space-y-5">
 
                 {/* Banner Admin */}
                 <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex items-start gap-3">

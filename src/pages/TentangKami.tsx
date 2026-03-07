@@ -57,7 +57,7 @@ const TentangKami: React.FC = () => {
             {/* Hero */}
             <div className="bg-gradient-to-br from-blue-50 to-white pt-20 pb-16 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl -mr-20 -mt-10 pointer-events-none" />
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
                     <span className="inline-block bg-brand-blue/10 text-brand-blue text-sm font-bold px-4 py-1.5 rounded-full mb-4">
                         Tentang El Top Up
                     </span>
@@ -70,7 +70,7 @@ const TentangKami: React.FC = () => {
                 </div>
             </div>
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 space-y-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 space-y-8">
 
                 {/* Stats */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

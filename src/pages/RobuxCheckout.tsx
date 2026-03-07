@@ -1,6 +1,8 @@
 // src/pages/RobuxCheckout.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../hooks/useAuth';
 
 // ─── Konstanta ──────────────────────────────────────────────────────────────
 const PRICE_PER_1000_IDR = Math.round(4.7 * 16950); // 4.7 USD × 16.950 = 79.665
@@ -142,11 +144,20 @@ const OrderSummary: React.FC<SummaryProps> = ({ amount, subtotal, fee, total, pa
 // ─── Halaman Utama ────────────────────────────────────────────────────────────
 const RobuxCheckout: React.FC = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
     // Scroll to top on mount
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'instant' });
     }, []);
+
+    // Redirect if not logged in
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+        }
+    }, [user, navigate]);
 
     const [currentStep, setCurrentStep] = useState<Step>(1);
 
@@ -155,6 +166,7 @@ const RobuxCheckout: React.FC = () => {
     const [rawAmount, setRawAmount] = useState('100');
 
     // Step 2: validasi game pass
+    const [orderId, setOrderId] = useState<string | null>(null);
     const [isValidating, setIsValidating] = useState(false);
     const [isValidated, setIsValidated] = useState(false);
     const [validationError, setValidationError] = useState<string | null>(null);
@@ -188,30 +200,93 @@ const RobuxCheckout: React.FC = () => {
         goToStep(2);
     };
 
-    // ── Mock validasi game pass (placeholder backend) ──
+    // ── Real API: Validasi game pass dan buat order UNPAID ──
     const handleValidate = async () => {
+        if (!user) {
+            alert('Anda harus login terlebih dahulu!');
+            navigate('/login');
+            return;
+        }
+
         setIsValidating(true);
         setValidationError(null);
         setIsValidated(false);
-        // Simulasi network request ~2 detik (nanti diganti dengan real API)
-        await new Promise((r) => setTimeout(r, 2000));
-        // [PLACEHOLDER] Selalu sukses untuk sekarang
-        const success = true;
-        if (success) {
-            setIsValidated(true);
-        } else {
-            setValidationError('Game Pass tidak ditemukan. Pastikan harga sudah benar dan coba lagi.');
+
+        try {
+            const response = await axios.post(
+                `${API_URL}/orders/checkout`,
+                {
+                    robloxUsername: username,
+                    robuxAmount: numAmount,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${user.access_token}`,
+                    },
+                }
+            );
+
+            if (response.data.success) {
+                setOrderId(response.data.orderId);
+                setIsValidated(true);
+                console.log('[Validation Success]', response.data);
+            } else {
+                setValidationError('Validasi gagal. Silakan coba lagi.');
+            }
+        } catch (error: any) {
+            console.error('[Validation Error]', error);
+            const errorMsg = error.response?.data?.details || error.response?.data?.error || 'Game Pass tidak ditemukan. Pastikan harga sudah benar dan coba lagi.';
+            setValidationError(errorMsg);
+        } finally {
+            setIsValidating(false);
         }
-        setIsValidating(false);
     };
 
-    // ── Mock pembayaran ──
+    // ── Real API: Bayar dan trigger RobuxShip order creation ──
     const handlePay = async () => {
+        if (!orderId) {
+            alert('Order ID tidak ditemukan. Silakan validasi ulang.');
+            return;
+        }
+
+        if (!user) {
+            alert('Anda harus login terlebih dahulu!');
+            navigate('/login');
+            return;
+        }
+
         setIsPaying(true);
-        await new Promise((r) => setTimeout(r, 1500));
-        setIsPaying(false);
-        setPaymentDone(true);
-        window.scrollTo({ top: 0, behavior: 'instant' });
+
+        try {
+            const response = await axios.post(
+                `${API_URL}/orders/${orderId}/mock-pay`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${user.access_token}`,
+                    },
+                }
+            );
+
+            if (response.data.success) {
+                console.log('[Payment Success]', response.data);
+                setPaymentDone(true);
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                
+                // Redirect ke halaman pesanan setelah 2 detik
+                setTimeout(() => {
+                    navigate('/pesanan');
+                }, 2000);
+            } else {
+                alert('Pembayaran gagal. Silakan coba lagi.');
+            }
+        } catch (error: any) {
+            console.error('[Payment Error]', error);
+            const errorMsg = error.response?.data?.error || 'Terjadi kesalahan saat memproses pembayaran.';
+            alert(errorMsg);
+        } finally {
+            setIsPaying(false);
+        }
     };
 
     const goToStep = (step: Step) => {

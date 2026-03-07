@@ -1,17 +1,52 @@
 // src/pages/Profile.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { mockOrders } from '../data/mockOrders';
+import axios from 'axios';
 
 const Profile: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  
+  const [stats, setStats] = useState({
+    totalTransactions: 0,
+    completedOrders: 0,
+    totalSpent: 0,
+  });
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
 
-  // Compute stats dari mock orders
-  const completedOrders = mockOrders.filter((o) => o.status === 'completed');
-  const totalTransactions = mockOrders.length;
-  const totalSpent = completedOrders.reduce((sum, o) => sum + o.price, 0);
+  // Fetch order statistics
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!user) return;
+
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+        
+        const response = await axios.get(`${API_URL}/orders`, {
+          headers: {
+            Authorization: `Bearer ${user.access_token}`,
+          },
+        });
+
+        const orders = response.data.orders || [];
+        const completed = orders.filter((o: any) => o.uiStatus === 'Completed');
+        const total = completed.reduce((sum: number, o: any) => sum + o.priceIdr, 0);
+
+        setStats({
+          totalTransactions: orders.length,
+          completedOrders: completed.length,
+          totalSpent: total,
+        });
+      } catch (err) {
+        console.error('Error fetching order stats:', err);
+      } finally {
+        setIsLoadingStats(false);
+      }
+    };
+
+    fetchStats();
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -35,19 +70,19 @@ const Profile: React.FC = () => {
   // Avatar: gunakan initial dari email jika tidak ada avatar
   const displayName = user.name ?? user.email.split('@')[0];
   const initial = displayName.charAt(0).toUpperCase();
-  const memberSince = '2026'; // Bisa diganti dari data user nanti
+  const memberSince = new Date().getFullYear(); // Bisa diganti dari data user nanti
 
   const infoItems = [
     { label: 'Email', value: user.email },
     { label: 'Username', value: displayName },
     { label: 'Role', value: user.role === 'admin' ? 'Admin' : 'Member' },
-    { label: 'Member Sejak', value: memberSince },
+    { label: 'Member Sejak', value: memberSince.toString() },
   ];
 
   const statCards = [
     {
       label: 'Total Pesanan',
-      value: totalTransactions,
+      value: isLoadingStats ? '...' : stats.totalTransactions,
       suffix: 'transaksi',
       color: 'bg-blue-50 text-brand-blue',
       icon: (
@@ -58,7 +93,7 @@ const Profile: React.FC = () => {
     },
     {
       label: 'Berhasil',
-      value: completedOrders.length,
+      value: isLoadingStats ? '...' : stats.completedOrders,
       suffix: 'selesai',
       color: 'bg-green-50 text-green-600',
       icon: (
@@ -69,7 +104,7 @@ const Profile: React.FC = () => {
     },
     {
       label: 'Total Belanja',
-      value: `Rp ${totalSpent.toLocaleString('id-ID')}`,
+      value: isLoadingStats ? '...' : `Rp ${stats.totalSpent.toLocaleString('id-ID')}`,
       suffix: '',
       color: 'bg-purple-50 text-purple-600',
       icon: (
@@ -152,27 +187,6 @@ const Profile: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Quick links */}
-      <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: 'Pesanan Saya', path: '/pesanan', icon: '📦' },
-          { label: 'Bantuan', path: '/bantuan', icon: '💬' },
-          { label: 'Syarat & Ketentuan', path: '/syarat-ketentuan', icon: '📄' },
-          { label: 'Kebijakan Privasi', path: '/kebijakan-privasi', icon: '🔒' },
-        ].map((item) => (
-          <Link
-            key={item.label}
-            to={item.path}
-            className="bg-white border border-gray-100 rounded-2xl p-4 text-center hover:border-brand-blue hover:shadow-md transition-all group"
-          >
-            <span className="text-2xl mb-2 block">{item.icon}</span>
-            <span className="text-xs font-semibold text-gray-600 group-hover:text-brand-blue transition-colors">
-              {item.label}
-            </span>
-          </Link>
-        ))}
       </div>
     </div>
   );

@@ -115,7 +115,7 @@ const KebijakanPrivasi: React.FC = () => {
 
             {/* Hero */}
             <div className="bg-gradient-to-br from-blue-50 to-white pt-20 pb-14">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <span className="inline-block bg-brand-blue/10 text-brand-blue text-sm font-bold px-4 py-1.5 rounded-full mb-4">
                         Legal
                     </span>
@@ -124,7 +124,7 @@ const KebijakanPrivasi: React.FC = () => {
                 </div>
             </div>
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 space-y-4">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 space-y-4">
 
                 {/* Intro */}
                 <div className="bg-brand-blue/5 border border-brand-blue/20 rounded-2xl p-5">
