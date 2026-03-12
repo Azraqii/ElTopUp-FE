@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // Import Halaman Auth
 import Register from './pages/Auth/Register';
 import Login from './pages/Auth/Login';
+import AuthSuccess from './pages/Auth/AuthSuccess';
 
 // Import Komponen UI
 import Navbar from './components/ui/Navbar';
@@ -18,7 +19,8 @@ import TentangKami from './pages/TentangKami';
 import SyaratKetentuan from './pages/SyaratKetentuan';
 import KebijakanPrivasi from './pages/KebijakanPrivasi';
 import Profile from './pages/Profile';
-import Pesanan from './pages/Pesanan';
+import Orders from './pages/Orders';
+import OrderDetail from './pages/OrderDetail';
 
 function App() {
   return (
@@ -37,6 +39,7 @@ function App() {
             {/* Auth */}
             <Route path="/auth/register" element={<Register />} /> 
             <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/callback" element={<AuthSuccess />} />
             
             {/* ROUTE BARU: Halaman Catalog (Berisi DisplaySection dkk) */}
             <Route path="/products" element={<ProductCatalog />} />
@@ -55,7 +58,8 @@ function App() {
 
             {/* User Pages */}
             <Route path="/profile" element={<Profile />} />
-            <Route path="/pesanan" element={<Pesanan />} />
+            <Route path="/pesanan" element={<Orders />} />
+            <Route path="/pesanan/:id" element={<OrderDetail />} />
 
             {/* Placeholder Pages */}
             <Route path="/transactions" element={<div className="max-w-7xl mx-auto px-4 mt-8"><h1>Riwayat Transaksi</h1></div>} />

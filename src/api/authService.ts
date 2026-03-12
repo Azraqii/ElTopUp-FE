@@ -94,11 +94,25 @@ const getMe = async (token: string): Promise<UserProfile> => {
   return response.data;
 };
 
+// --- FUNGSI 5: Sync Google OAuth user to our DB ---
+// Called after Supabase OAuth callback. The access_token is already a valid
+// Supabase JWT, so we send it as Bearer to POST /api/auth/sync which upserts
+// the user into our own database.
+const syncGoogle = async (accessToken: string): Promise<UserProfile> => {
+  const response = await axios.post<UserProfile>(
+    API_URL + 'sync',
+    {},
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+  return response.data;
+};
+
 const authService = {
   register,
   logout,
   login,
   getMe,
+  syncGoogle,
 };
 
 export default authService;

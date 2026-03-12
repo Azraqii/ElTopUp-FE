@@ -1,6 +1,6 @@
 // src/pages/Pesanan.tsx
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import axios from 'axios';
 
@@ -66,8 +66,9 @@ const filterTabs: { label: string; value: 'Semua' | OrderStatus }[] = [
 const formatPrice = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
 
 // ── Component ──────────────────────────────────────────────────
-const Pesanan: React.FC = () => {
+const Orders: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState<'Semua' | OrderStatus>('Semua');
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -214,7 +215,8 @@ const Pesanan: React.FC = () => {
                 return (
                   <div
                     key={order.id}
-                    className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
+                    onClick={() => navigate(`/pesanan/${order.id}`)}
+                    className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md hover:border-blue-100 transition-all cursor-pointer"
                   >
                     {/* Top row: ID + status */}
                     <div className="flex items-start justify-between mb-3 sm:mb-4">
@@ -255,39 +257,51 @@ const Pesanan: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Bottom action (optional) */}
-                    {order.uiStatus === 'Completed' && (
-                      <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-50 flex justify-end">
-                        <button className="text-xs font-semibold text-brand-blue hover:underline">
-                          Beli Lagi
-                        </button>
+                    {/* Bottom action — always visible */}
+                    <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-50 flex items-center justify-between gap-2">
+                      {/* Left: inline status text */}
+                      <div className="flex-1 min-w-0">
+                        {order.uiStatus === 'On Progress' && (
+                          <p className="text-[10px] sm:text-xs text-yellow-600 font-medium flex items-center gap-1.5">
+                            <svg className="w-3 sm:w-3.5 h-3 sm:h-3.5 animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                            {order.paymentStatus === 'UNPAID' ? 'Menunggu pembayaran...' : 'Sedang diproses...'}
+                          </p>
+                        )}
+                        {order.uiStatus === 'Failed' && (
+                          <p className="text-[10px] sm:text-xs text-red-500 font-medium">Transaksi gagal</p>
+                        )}
+                        {order.uiStatus === 'Cancelled' && (
+                          <p className="text-[10px] sm:text-xs text-gray-400 font-medium">Dibatalkan</p>
+                        )}
                       </div>
-                    )}
-                    {order.uiStatus === 'On Progress' && (
-                      <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-                        <p className="text-[10px] sm:text-xs text-yellow-600 font-medium flex items-center gap-1.5">
-                          <svg className="w-3 sm:w-3.5 h-3 sm:h-3.5 animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24">
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            />
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                            />
+
+                      {/* Right: action buttons */}
+                      <div
+                        className="flex items-center gap-3 flex-shrink-0"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {order.uiStatus === 'Completed' && (
+                          <Link
+                            to="/checkout/robux"
+                            className="text-[10px] sm:text-xs font-semibold text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                            Beli Lagi
+                          </Link>
+                        )}
+                        <Link
+                          to={`/pesanan/${order.id}`}
+                          className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-bold text-brand-blue hover:text-blue-700 transition-colors"
+                        >
+                          Lihat Detail
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                           </svg>
-                          {order.paymentStatus === 'UNPAID' ? 'Menunggu pembayaran...' : 'Sedang diproses...'}
-                        </p>
-                        <button className="text-[10px] sm:text-xs font-semibold text-gray-400 hover:underline">
-                          Hubungi Support
-                        </button>
+                        </Link>
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               })}
@@ -299,4 +313,4 @@ const Pesanan: React.FC = () => {
   );
 };
 
-export default Pesanan;
+export default Orders;

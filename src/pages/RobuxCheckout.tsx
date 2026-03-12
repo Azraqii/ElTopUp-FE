@@ -155,7 +155,7 @@ const RobuxCheckout: React.FC = () => {
     // Redirect if not logged in
     useEffect(() => {
         if (!user) {
-            navigate('/login');
+            navigate('/auth/login');
         }
     }, [user, navigate]);
 
@@ -204,7 +204,7 @@ const RobuxCheckout: React.FC = () => {
     const handleValidate = async () => {
         if (!user) {
             alert('Anda harus login terlebih dahulu!');
-            navigate('/login');
+            navigate('/auth/login');
             return;
         }
 
@@ -251,7 +251,7 @@ const RobuxCheckout: React.FC = () => {
 
         if (!user) {
             alert('Anda harus login terlebih dahulu!');
-            navigate('/login');
+            navigate('/auth/login');
             return;
         }
 
