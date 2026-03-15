@@ -4,6 +4,21 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 
+interface SnapPayCallbacks {
+    onSuccess?: (result: unknown) => void;
+    onPending?: (result: unknown) => void;
+    onError?: (result: unknown) => void;
+    onClose?: () => void;
+}
+
+declare global {
+    interface Window {
+        snap?: {
+            pay: (token: string, callbacks: SnapPayCallbacks) => void;
+        };
+    }
+}
+
 // ─── Konstanta ──────────────────────────────────────────────────────────────
 const PRICE_PER_1000_IDR = Math.round(4.7 * 16950); // 4.7 USD × 16.950 = 79.665
 const QUICK_AMOUNTS = [100, 500, 1000, 2500, 5000, 10000];
@@ -44,6 +59,33 @@ const parseAmount = (val: string) => {
     const cleaned = val.replace(/\D/g, '');
     if (!cleaned) return null;
     return Math.min(parseInt(cleaned), 100_000);
+};
+
+const loadMidtransSnapScript = (clientKey: string, isProduction: boolean): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        if (window.snap) {
+            resolve();
+            return;
+        }
+
+        const existingScript = document.getElementById('midtrans-snap-js') as HTMLScriptElement | null;
+        if (existingScript) {
+            existingScript.addEventListener('load', () => resolve(), { once: true });
+            existingScript.addEventListener('error', () => reject(new Error('Gagal memuat Midtrans Snap script.')), { once: true });
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.id = 'midtrans-snap-js';
+        script.src = isProduction
+            ? 'https://app.midtrans.com/snap/snap.js'
+            : 'https://app.sandbox.midtrans.com/snap/snap.js';
+        script.setAttribute('data-client-key', clientKey);
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Gagal memuat Midtrans Snap script.'));
+        document.body.appendChild(script);
+    });
 };
 
 const StepIndicator: React.FC<{ currentStep: Step }> = ({ currentStep }) => (
@@ -146,6 +188,8 @@ const RobuxCheckout: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+    const MIDTRANS_CLIENT_KEY = import.meta.env.VITE_MIDTRANS_CLIENT_KEY as string | undefined;
+    const MIDTRANS_IS_PRODUCTION = import.meta.env.VITE_MIDTRANS_IS_PRODUCTION === 'true';
 
     // Scroll to top on mount
     useEffect(() => {
@@ -167,6 +211,8 @@ const RobuxCheckout: React.FC = () => {
 
     // Step 2: validasi game pass
     const [orderId, setOrderId] = useState<string | null>(null);
+    const [snapToken, setSnapToken] = useState<string | null>(null);
+    const [snapRedirectUrl, setSnapRedirectUrl] = useState<string | null>(null);
     const [isValidating, setIsValidating] = useState(false);
     const [isValidated, setIsValidated] = useState(false);
     const [validationError, setValidationError] = useState<string | null>(null);
@@ -211,9 +257,20 @@ const RobuxCheckout: React.FC = () => {
         setIsValidating(true);
         setValidationError(null);
         setIsValidated(false);
+        setPaymentDone(false);
+        setOrderId(null);
+        setSnapToken(null);
+        setSnapRedirectUrl(null);
 
         try {
-            const response = await axios.post(
+            const response = await axios.post<{
+                success: boolean;
+                orderId: string;
+                payment?: {
+                    snapToken?: string;
+                    snapRedirectUrl?: string;
+                };
+            }>(
                 `${API_URL}/orders/checkout`,
                 {
                     robloxUsername: username,
@@ -227,7 +284,17 @@ const RobuxCheckout: React.FC = () => {
             );
 
             if (response.data.success) {
+                const token = response.data.payment?.snapToken ?? null;
+                const redirectUrl = response.data.payment?.snapRedirectUrl ?? null;
+
+                if (!token && !redirectUrl) {
+                    setValidationError('Token pembayaran tidak tersedia. Silakan ulangi validasi.');
+                    return;
+                }
+
                 setOrderId(response.data.orderId);
+                setSnapToken(token);
+                setSnapRedirectUrl(redirectUrl);
                 setIsValidated(true);
                 console.log('[Validation Success]', response.data);
             } else {
@@ -242,7 +309,7 @@ const RobuxCheckout: React.FC = () => {
         }
     };
 
-    // ── Real API: Bayar dan trigger RobuxShip order creation ──
+    // ── Real API: Bayar via Midtrans Snap (QRIS) ──
     const handlePay = async () => {
         if (!orderId) {
             alert('Order ID tidak ditemukan. Silakan validasi ulang.');
@@ -255,34 +322,71 @@ const RobuxCheckout: React.FC = () => {
             return;
         }
 
+        if (paymentMethod !== 'qris') {
+            alert('Untuk saat ini metode pembayaran yang tersedia hanya QRIS.');
+            return;
+        }
+
+        if (!snapToken && !snapRedirectUrl) {
+            alert('Token pembayaran Midtrans tidak ditemukan. Silakan validasi ulang order.');
+            return;
+        }
+
         setIsPaying(true);
 
         try {
-            const response = await axios.post(
-                `${API_URL}/orders/${orderId}/mock-pay`,
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${user.access_token}`,
-                    },
+            if (!MIDTRANS_CLIENT_KEY) {
+                if (snapRedirectUrl) {
+                    window.location.href = snapRedirectUrl;
+                    return;
                 }
-            );
-
-            if (response.data.success) {
-                console.log('[Payment Success]', response.data);
-                setPaymentDone(true);
-                window.scrollTo({ top: 0, behavior: 'instant' });
-                
-                // Redirect ke halaman pesanan setelah 2 detik
-                setTimeout(() => {
-                    navigate('/pesanan');
-                }, 2000);
-            } else {
-                alert('Pembayaran gagal. Silakan coba lagi.');
+                throw new Error('Konfigurasi Midtrans client key belum tersedia di frontend.');
             }
-        } catch (error: any) {
+
+            if (!snapToken && snapRedirectUrl) {
+                window.location.href = snapRedirectUrl;
+                return;
+            }
+
+            if (!snapToken) {
+                throw new Error('Token pembayaran Midtrans tidak tersedia.');
+            }
+
+            await loadMidtransSnapScript(MIDTRANS_CLIENT_KEY, MIDTRANS_IS_PRODUCTION);
+
+            if (!window.snap) {
+                throw new Error('Midtrans Snap belum siap. Coba lagi dalam beberapa detik.');
+            }
+
+            await new Promise<void>((resolve, reject) => {
+                window.snap?.pay(snapToken, {
+                    onSuccess: (result) => {
+                        console.log('[Midtrans Success]', result);
+                        setPaymentDone(true);
+                        resolve();
+                    },
+                    onPending: (result) => {
+                        console.log('[Midtrans Pending]', result);
+                        setPaymentDone(true);
+                        resolve();
+                    },
+                    onError: (result) => {
+                        console.error('[Midtrans Error]', result);
+                        reject(new Error('Pembayaran gagal diproses oleh Midtrans.'));
+                    },
+                    onClose: () => {
+                        reject(new Error('Popup pembayaran ditutup sebelum transaksi selesai.'));
+                    },
+                });
+            });
+
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            setTimeout(() => {
+                navigate(`/pesanan/${orderId}`);
+            }, 1200);
+        } catch (error: unknown) {
             console.error('[Payment Error]', error);
-            const errorMsg = error.response?.data?.error || 'Terjadi kesalahan saat memproses pembayaran.';
+            const errorMsg = error instanceof Error ? error.message : 'Terjadi kesalahan saat memproses pembayaran.';
             alert(errorMsg);
         } finally {
             setIsPaying(false);
@@ -302,7 +406,15 @@ const RobuxCheckout: React.FC = () => {
                 <button
                     onClick={() => {
                         if (currentStep === 1) navigate('/');
-                        else if (currentStep === 2) { setIsValidated(false); setValidationError(null); goToStep(1); }
+                        else if (currentStep === 2) {
+                            setIsValidated(false);
+                            setValidationError(null);
+                            setOrderId(null);
+                            setSnapToken(null);
+                            setSnapRedirectUrl(null);
+                            setPaymentDone(false);
+                            goToStep(1);
+                        }
                         else goToStep((currentStep - 1) as Step);
                     }}
                     className="flex items-center gap-2 text-gray-500 hover:text-gray-800 text-sm font-medium mb-6 transition-colors group"
@@ -562,9 +674,9 @@ const RobuxCheckout: React.FC = () => {
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                             </svg>
                                         </div>
-                                        <h3 className="text-xl font-extrabold text-gray-900 mb-2">Pembayaran Dikonfirmasi!</h3>
+                                        <h3 className="text-xl font-extrabold text-gray-900 mb-2">Pembayaran Sedang Diproses</h3>
                                         <p className="text-gray-500 text-sm mb-6">
-                                            RBX kamu sedang diproses dan akan tersedia dalam <strong>1–5 menit</strong>.
+                                            Transaksi kamu sudah dikirim. Cek status terbaru di halaman pesanan dalam <strong>1–5 menit</strong>.
                                         </p>
                                         <Link to="/" className="inline-block bg-brand-blue text-white font-bold px-8 py-3 rounded-2xl hover:bg-blue-600 transition-all">
                                             Kembali ke Beranda
@@ -677,17 +789,17 @@ const RobuxCheckout: React.FC = () => {
                                         {/* QRIS Placeholder */}
                                         {paymentMethod === 'qris' && (
                                             <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-                                                <h3 className="font-bold text-gray-900 mb-4">Bayar via QRIS</h3>
+                                                <h3 className="font-bold text-gray-900 mb-4">Bayar via QRIS (Midtrans)</h3>
                                                 {/* Placeholder QR */}
                                                 <div className="flex flex-col items-center gap-4">
                                                     <div className="w-48 h-48 bg-gray-100 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center text-center px-4">
                                                         <svg className="w-10 h-10 text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v-4m6 11h-6m6-8h2M4 4h6v4H4zm0 12h6v4H4zm12-12h4v4h-4z" />
                                                         </svg>
-                                                        <p className="text-xs text-gray-400 font-medium">QR Code akan muncul setelah<br />payment gateway terhubung</p>
+                                                        <p className="text-xs text-gray-400 font-medium">QR Code akan tampil di popup<br />setelah klik konfirmasi pembayaran</p>
                                                     </div>
                                                     <p className="text-sm text-gray-500 text-center">
-                                                        Bayar <span className="font-bold text-gray-900">{formatIDR(total)}</span> ke QRIS di bawah
+                                                        Klik konfirmasi untuk membayar <span className="font-bold text-gray-900">{formatIDR(total)}</span> melalui Midtrans QRIS
                                                     </p>
                                                 </div>
                                             </div>
