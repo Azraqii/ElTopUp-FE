@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
+import RobloxUsernameInput from '../components/ui/RobloxUsernameInput';
 
 interface SnapPayCallbacks {
     onSuccess?: (result: unknown) => void;
@@ -443,7 +444,7 @@ const RobuxCheckout: React.FC = () => {
                         {/* ════════════ STEP 1: Detail Akun ════════════ */}
                         {currentStep === 1 && (
                             <>
-                                {/* Card: Username */}
+                                   {/* Card: Username */}
                                 <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
                                     <div className="flex items-center gap-2 mb-4">
                                         <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -456,20 +457,21 @@ const RobuxCheckout: React.FC = () => {
                                             <p className="text-xs text-gray-400">Masukkan username akun yang mau diisi RBX</p>
                                         </div>
                                     </div>
-                                    <label htmlFor="username" className="block text-sm font-semibold text-gray-600 mb-2">
+                                    <label className="block text-sm font-semibold text-gray-600 mb-2">
                                         Username Roblox
                                     </label>
-                                    <input
-                                        id="username"
-                                        type="text"
+ 
+                                    {/* ↓↓↓ GANTI INPUT LAMA DENGAN KOMPONEN INI ↓↓↓ */}
+                                    <RobloxUsernameInput
                                         value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
-                                        autoFocus
-                                        className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 rounded-2xl px-5 py-4 text-base font-medium text-gray-800 outline-none transition-all placeholder:text-gray-300"
-                                        placeholder="Contoh: RobloxPlayer123"
+                                        onChange={setUsername}
+                                        apiBaseUrl={API_URL}
                                     />
+                                    {/* ↑↑↑ ─────────────────────────────────── ↑↑↑ */}
+ 
                                     <p className="text-xs text-gray-400 mt-2">RBX bakal dikirim ke username ini.</p>
                                 </div>
+ 
 
                                 {/* Card: Pilih Jumlah RBX */}
                                 <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
