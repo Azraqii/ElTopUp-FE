@@ -9,6 +9,7 @@ import logoELTopup from "../../assets/eltopup.svg";
 const Navbar: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -32,9 +33,12 @@ const Navbar: React.FC = () => {
     }, []);
 
     const handleLogout = () => {
-        logout();
+        setIsLoggingOut(true);
         setIsDropdownOpen(false);
-        navigate('/');
+        setTimeout(() => {
+            logout();
+            navigate('/');
+        }, 700);
     };
 
     const displayName = user ? (user.name ?? user.email.split('@')[0]) : '';
@@ -131,12 +135,13 @@ const Navbar: React.FC = () => {
                                         <div className="border-t border-gray-50 mt-1 pt-1">
                                             <button
                                                 onClick={handleLogout}
-                                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                                                disabled={isLoggingOut}
+                                                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${isLoggingOut ? 'text-gray-400 cursor-not-allowed' : 'text-red-500 hover:bg-red-50'}`}
                                             >
                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                                 </svg>
-                                                Logout
+                                                {isLoggingOut ? 'Keluar...' : 'Logout'}
                                             </button>
                                         </div>
                                     </div>
@@ -248,10 +253,11 @@ const Navbar: React.FC = () => {
             <div className="px-5 pb-8">
                 {user ? (
                     <button
-                        onClick={() => { handleLogout(); setIsSidebarOpen(false); }}
-                        className="block w-full bg-red-500 text-white text-center font-bold py-3 rounded-2xl hover:bg-red-600 transition-all"
+                        onClick={() => { setIsSidebarOpen(false); handleLogout(); }}
+                        disabled={isLoggingOut}
+                        className={`block w-full text-white text-center font-bold py-3 rounded-2xl transition-all ${isLoggingOut ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'}`}
                     >
-                        Logout
+                        {isLoggingOut ? 'Keluar...' : 'Logout'}
                     </button>
                 ) : (
                     <Link
