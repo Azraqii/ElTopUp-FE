@@ -14,14 +14,9 @@ const GoogleIcon: React.FC = () => (
   </svg>
 );
 
-// Construct Supabase Google OAuth URL and redirect browser to it
-const SUPABASE_URL =
-  import.meta.env.VITE_SUPABASE_URL ||
-  `https://${import.meta.env.VITE_SUPABASE_PROJECT_REF}.supabase.co`;
-
 const redirectToGoogle = () => {
-  const callbackUrl = `${window.location.origin}/auth/callback`;
-  window.location.href = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(callbackUrl)}`;
+  const apiUrl = import.meta.env.VITE_API_URL || 'https://api.eltopup.id/api';
+  window.location.href = `${apiUrl}/auth/google`;
 };
 
 const Login: React.FC = () => {
