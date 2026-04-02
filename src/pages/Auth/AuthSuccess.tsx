@@ -1,7 +1,7 @@
 // src/pages/Auth/AuthSuccess.tsx
-// Supabase OAuth Callback Handler
-// Supabase redirects here after Google OAuth with tokens in the URL hash:
-//   /auth/callback#access_token=...&refresh_token=...&token_type=bearer&type=signup
+// Google OAuth Callback Handler
+// Backend redirects here after Google OAuth with JWT in query param:
+//   /auth/callback?token=eyJhbGci...
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -18,46 +18,38 @@ const AuthSuccess: React.FC = () => {
 
   useEffect(() => {
     const handle = async () => {
-      // ── 1. Extract tokens from URL hash ──────────────────────────────────
-      // Supabase puts tokens in the fragment: #access_token=...&refresh_token=...
-      const hash = window.location.hash.substring(1); // strip leading '#'
-      const params = new URLSearchParams(hash);
-      const accessToken = params.get('access_token');
-      const refreshToken = params.get('refresh_token') ?? undefined;
+      // ── 1. Extract JWT from query param ──────────────────────────────────
+      // Backend redirects with: /auth/callback?token=eyJhbGci...
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
 
-      if (!accessToken) {
-        // Also check query string for edge cases
-        const qp = new URLSearchParams(window.location.search);
-        const qErr = qp.get('error_description') || qp.get('error') || 'Token tidak ditemukan dari Google OAuth.';
-        setErrorMsg(qErr);
+      if (!token) {
+        const errMsg = params.get('error_description') || params.get('error') || 'Token tidak ditemukan dari Google OAuth.';
+        setErrorMsg(errMsg);
         setStage('error');
         return;
       }
 
       try {
-        // ── 2. Sync Google user to our DB via POST /api/auth/sync ────────────
-        await authService.syncGoogle(accessToken);
+        // ── 2. Fetch full profile from GET /api/auth/me ──────────────────────
+        const profile = await authService.getMe(token);
 
-        // ── 3. Fetch full profile from GET /api/auth/me ──────────────────────
-        const profile = await authService.getMe(accessToken);
-
-        // ── 4. Build StoredUser & persist ────────────────────────────────────
+        // ── 3. Build StoredUser & persist ────────────────────────────────────
         const storedUser = {
           ...profile,
-          access_token: accessToken,
-          refresh_token: refreshToken,
+          access_token: token,
         };
         localStorage.setItem('user', JSON.stringify(storedUser));
         setUser(storedUser);
 
-        // ── 5. Clean up URL hash then redirect ───────────────────────────────
+        // ── 4. Redirect to dashboard ─────────────────────────────────────────
         navigate('/', { replace: true });
       } catch (err: any) {
         console.error('[AuthSuccess] Error:', err);
         const msg =
           err.response?.data?.error ||
           err.message ||
-          'Gagal menyinkronkan akun Google. Coba lagi.';
+          'Gagal memproses akun Google. Coba lagi.';
         setErrorMsg(msg);
         setStage('error');
       }
