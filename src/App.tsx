@@ -11,6 +11,7 @@ import Footer from './components/ui/Footer';
 
 // Import Halaman Utama
 import LandingPage from './pages/LandingPage';
+import LandingPageV2 from './pages/LandingPageV2';
 import ProductDetail from './pages/ProductDetail';
 import ProductCatalog from './pages/ProductCatalog';
 import RobuxCheckout from './pages/RobuxCheckout';
@@ -35,6 +36,8 @@ function App() {
           <Routes>
             {/* Halaman Depan */}
             <Route path="/" element={<LandingPage />} />
+            {/* Preview LandingPage V2 — sementara, sebelum replace production */}
+            <Route path="/v2" element={<LandingPageV2 />} />
             
             {/* Auth */}
             <Route path="/auth/register" element={<Register />} /> 
